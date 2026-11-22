@@ -54,6 +54,10 @@ fun DrawerSearchPreference(
                 adapter = prefs2.autoShowKeyboardInDrawer.getAdapter(),
                 label = stringResource(id = R.string.pref_search_auto_show_keyboard),
             )
+            SwitchPreference(
+                adapter = prefs2.swipeDownInDrawerOpensSearch.getAdapter(),
+                label = stringResource(id = R.string.pref_swipe_down_in_drawer_opens_search),
+            )
             SearchProvider(
                 context = context,
             )
