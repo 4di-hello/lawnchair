@@ -30,6 +30,8 @@ import app.lawnchair.ui.preferences.PreferenceActivity
 import app.lawnchair.ui.preferences.navigation.AppDrawerAppListToFolder
 import app.lawnchair.views.ComposeBottomSheet
 import com.android.launcher3.AbstractFloatingView
+import com.android.launcher3.LauncherSettings.Favorites.CONTAINER_DESKTOP
+import com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT
 import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICATION
 import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_TASK
 import com.android.launcher3.R
@@ -220,6 +222,11 @@ class LawnchairShortcut {
             if (launcherActivityInfo != null) {
                 val defaultTitle = launcherActivityInfo.label.toString()
 
+                // LC: icons on the home screen, in the dock or in a folder get their own gestures
+                val container = mItemInfo.container
+                val isHomeItem = container == CONTAINER_DESKTOP || container == CONTAINER_HOTSEAT || container >= 0
+                val homeItemId = if (isHomeItem) mItemInfo.id else ItemInfo.NO_ID
+
                 AbstractFloatingView.closeAllOpenViews(launcher)
                 ComposeBottomSheet.show(
                     context = launcher,
@@ -229,6 +236,7 @@ class LawnchairShortcut {
                         icon = icon,
                         defaultTitle = defaultTitle,
                         componentKey = appInfo.toComponentKey(),
+                        itemId = homeItemId,
                     ) { close(true) }
                 }
             } else {

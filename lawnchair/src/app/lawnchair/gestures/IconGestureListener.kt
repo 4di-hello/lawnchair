@@ -1,6 +1,7 @@
 package app.lawnchair.gestures
 
 import android.util.Log
+import android.view.View
 import android.view.ViewConfiguration
 import androidx.datastore.preferences.core.Preferences
 import androidx.dynamicanimation.animation.DynamicAnimation
@@ -11,7 +12,7 @@ import app.lawnchair.gestures.config.GestureHandlerConfig
 import app.lawnchair.gestures.type.GestureType
 import app.lawnchair.launcher
 import app.lawnchair.preferences2.PreferenceManager2
-import com.android.launcher3.BubbleTextView
+import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.MSDLPlayerWrapper
 import com.android.launcher3.util.VibratorWrapper
@@ -20,9 +21,11 @@ import kotlin.math.abs
 import kotlinx.coroutines.launch
 
 class IconGestureListener(
-    private val view: BubbleTextView,
+    private val view: View,
     private val prefs: PreferenceManager2,
     private val componentKey: ComponentKey?,
+    // LC: home screen item id, for gestures set on this very item (NO_ID if none)
+    private val itemId: Int = ItemInfo.NO_ID,
 ) : DirectionalGestureListener(view.context) {
 
     private val context get() = view.context
@@ -155,6 +158,11 @@ class IconGestureListener(
     /** Get gesture handler for that app's component
      * @param gestureType The type of gesture to resolve for the current component */
     private fun resolveGesture(gestureType: GestureType): GestureHandlerConfig? {
+        if (itemId != ItemInfo.NO_ID) {
+            prefs.getGestureForItemCached(itemId, gestureType)?.let { own ->
+                return own.takeUnless { it is GestureHandlerConfig.NoOp }
+            }
+        }
         val currentComponentKey = componentKey ?: return null
         val gesture = prefs.getGestureForAppCached(currentComponentKey, gestureType)
         return gesture.takeUnless { it is GestureHandlerConfig.NoOp }

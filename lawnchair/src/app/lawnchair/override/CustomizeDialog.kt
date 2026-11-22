@@ -42,6 +42,7 @@ import app.lawnchair.preferences2.asState
 import app.lawnchair.preferences2.preferenceManager2
 import app.lawnchair.ui.preferences.PreferenceActivity
 import app.lawnchair.ui.preferences.components.AppGesturePreference
+import app.lawnchair.ui.preferences.components.ItemGesturePreference
 import app.lawnchair.ui.preferences.components.controls.SwitchPreference
 import app.lawnchair.ui.preferences.components.layout.ClickableIcon
 import app.lawnchair.ui.preferences.components.layout.PreferenceGroup
@@ -51,6 +52,7 @@ import app.lawnchair.util.navigationBarsOrDisplayCutoutPadding
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
+import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.util.ComponentKey
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import kotlinx.coroutines.launch
@@ -138,6 +140,7 @@ fun CustomizeAppDialog(
     defaultTitle: String,
     componentKey: ComponentKey,
     modifier: Modifier = Modifier,
+    itemId: Int = ItemInfo.NO_ID,
     onClose: () -> Unit,
 ) {
     val prefs = preferenceManager()
@@ -209,11 +212,21 @@ fun CustomizeAppDialog(
                     GestureType.SWIPE_LEFT,
                     GestureType.SWIPE_RIGHT,
                 ).map { gestureType ->
-                    AppGesturePreference(
-                        componentKey,
-                        gestureType,
-                        stringResource(id = gestureType.labelResId),
-                    )
+                    if (itemId != ItemInfo.NO_ID) {
+                        // LC: gestures belong to this icon; the app's gestures are the fallback
+                        ItemGesturePreference(
+                            itemId = itemId,
+                            fallback = componentKey,
+                            gestureType = gestureType,
+                            label = stringResource(id = gestureType.labelResId),
+                        )
+                    } else {
+                        AppGesturePreference(
+                            componentKey,
+                            gestureType,
+                            stringResource(id = gestureType.labelResId),
+                        )
+                    }
                 }
             }
         }

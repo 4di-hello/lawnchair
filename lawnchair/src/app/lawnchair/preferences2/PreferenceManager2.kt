@@ -972,6 +972,41 @@ class PreferenceManager2 @Inject constructor(
         } ?: GestureHandlerConfig.NoOp
     }
 
+    // LC: Gestures of a single home screen item (icon or folder), keyed by its item id.
+    // An item's own gesture takes precedence over the gesture of its app.
+    private fun itemGestureKey(itemId: Int, gestureType: GestureType) = stringPreferencesKey("item:$itemId:${gestureType.name}")
+
+    suspend fun setGestureForItem(
+        itemId: Int,
+        gestureType: GestureType,
+        gesture: GestureHandlerConfig,
+    ) {
+        val key = itemGestureKey(itemId, gestureType)
+        preferencesDataStore.edit { prefs ->
+            prefs[key] = kotlinxJson.encodeToString(gesture)
+        }
+    }
+
+    /** Emits the item's own gesture, or null when it has none. */
+    fun getGestureForItem(itemId: Int, gestureType: GestureType): Flow<GestureHandlerConfig?> {
+        val key = itemGestureKey(itemId, gestureType)
+        return preferencesDataStore.data.map { prefs ->
+            prefs[key]?.let {
+                runCatching { kotlinxJson.decodeFromString<GestureHandlerConfig>(it) }
+                    .getOrDefault(GestureHandlerConfig.NoOp)
+            }
+        }
+    }
+
+    /** The item's own gesture, or null when it has none. */
+    fun getGestureForItemCached(itemId: Int, gestureType: GestureType): GestureHandlerConfig? {
+        val key = itemGestureKey(itemId, gestureType)
+        return getCachedPreferences()[key]?.let {
+            runCatching { kotlinxJson.decodeFromString<GestureHandlerConfig>(it) }
+                .getOrDefault(GestureHandlerConfig.NoOp)
+        }
+    }
+
     private fun initializeIconShape(shape: IconShape) {
         CustomAdaptiveIconDrawable.sInitialized = true
         CustomAdaptiveIconDrawable.sMaskId = shape.getHashString()

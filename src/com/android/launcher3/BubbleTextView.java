@@ -114,6 +114,7 @@ import java.util.Objects;
 import app.lawnchair.preferences2.PreferenceCacheExtensionsKt;
 import app.lawnchair.font.FontManager;
 import app.lawnchair.gestures.IconGestureListener;
+import app.lawnchair.gestures.IconSwipeGestureTarget;
 import app.lawnchair.preferences.PreferenceManager;
 import app.lawnchair.preferences2.PreferenceManager2;
 import app.lawnchair.util.LawnchairUtilsKt;
@@ -125,7 +126,7 @@ import app.lawnchair.animation.PhysicsAnimator;
  * too aggressive.
  */
 public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
-        FloatingIconViewCompanion, DraggableView, Reorderable {
+        FloatingIconViewCompanion, DraggableView, Reorderable, IconSwipeGestureTarget {
 
     public static final String TAG = "BubbleTextView";
 
@@ -506,7 +507,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         setTag(itemInfo);
         // Lawnchair: Icon swipe gesture feature
         mGestureListener = shouldSupportIconSwipeGestures()
-                ? new IconGestureListener(this, pref2, itemInfo.getComponentKey())
+                ? new IconGestureListener(this, pref2, itemInfo.getComponentKey(), itemInfo.id)
                 : null;
     }
 
@@ -784,6 +785,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
 
     /** Lawnchair: Check if icon swipe feature is enabled, 
      * and has a horizontal gesture configured for it */
+    @Override
     public boolean hasConfiguredHorizontalIconSwipeGesture() {
         return mGestureListener != null
                 && isIconSwipeGestureEnabledForCurrentState()
@@ -792,6 +794,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
 
     /** Lawnchair: Check if icon swipe feature is enabled, 
      * and has a vertical gesture configured for it */
+    @Override
     public boolean hasConfiguredVerticalIconSwipeGesture() {
         return mGestureListener != null
             && isIconSwipeGestureEnabledForCurrentState()

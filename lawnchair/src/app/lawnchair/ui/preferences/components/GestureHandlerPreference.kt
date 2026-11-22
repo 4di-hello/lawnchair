@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -40,6 +41,10 @@ import app.lawnchair.ui.util.LocalBottomSheetHandler
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.MSDLPlayerWrapper
 import com.google.android.msdl.data.model.MSDLToken
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 @Composable
@@ -120,15 +125,63 @@ fun AppGesturePreference(
     label: String,
     modifier: Modifier = Modifier,
 ) {
+    val prefs = preferenceManager2()
+    val flow = remember(cmp, gestureType) { prefs.getGestureForApp(cmp, gestureType) }
+    GestureTargetPreference(
+        configFlow = flow,
+        onSave = { prefs.setGestureForApp(cmp, gestureType, it) },
+        label = label,
+        modifier = modifier,
+    )
+}
+
+/**
+ * LC: Gesture of a single home screen item (an icon or a folder). Shows the app's gesture
+ * as long as the item has none of its own.
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+@Composable
+fun ItemGesturePreference(
+    itemId: Int,
+    fallback: ComponentKey?,
+    gestureType: GestureType,
+    label: String,
+    modifier: Modifier = Modifier,
+) {
+    val prefs = preferenceManager2()
+    val flow = remember(itemId, fallback, gestureType) {
+        prefs.getGestureForItem(itemId, gestureType).flatMapLatest { own ->
+            when {
+                own != null -> flowOf(own)
+                fallback != null -> prefs.getGestureForApp(fallback, gestureType)
+                else -> flowOf(GestureHandlerConfig.NoOp)
+            }
+        }
+    }
+    GestureTargetPreference(
+        configFlow = flow,
+        onSave = { prefs.setGestureForItem(itemId, gestureType, it) },
+        label = label,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun GestureTargetPreference(
+    configFlow: Flow<GestureHandlerConfig>,
+    onSave: suspend (GestureHandlerConfig) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier,
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val prefs = preferenceManager2()
     val mMSDLPlayerWrapper = MSDLPlayerWrapper.INSTANCE.get(context)
 
-    val currentConfig by produceState<GestureHandlerConfig>(initialValue = GestureHandlerConfig.NoOp) {
-        prefs.getGestureForApp(cmp, gestureType).collect { value = it }
+    val currentConfig by produceState<GestureHandlerConfig>(initialValue = GestureHandlerConfig.NoOp, configFlow) {
+        configFlow.collect { value = it }
     }
 
+    val currentOnSave by rememberUpdatedState(onSave)
     val resultReceiver = remember {
         object : ResultReceiver(Handler(Looper.getMainLooper())) {
             override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
@@ -137,7 +190,7 @@ fun AppGesturePreference(
                     if (handlerString != null) {
                         val config = GestureHandlerConfig.fromString(handlerString)
                         scope.launch {
-                            prefs.setGestureForApp(cmp, gestureType, config)
+                            currentOnSave(config)
                         }
                     }
                 }

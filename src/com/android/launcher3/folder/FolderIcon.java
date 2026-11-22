@@ -59,6 +59,7 @@ import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.DropTarget.DragObject;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
+import com.android.launcher3.LauncherState;
 import com.android.launcher3.OnAlarmListener;
 import com.android.launcher3.R;
 import com.android.launcher3.Reorderable;
@@ -91,12 +92,15 @@ import com.android.launcher3.widget.PendingAddShortcutInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import app.lawnchair.gestures.IconGestureListener;
+import app.lawnchair.gestures.IconSwipeGestureTarget;
+import app.lawnchair.preferences2.PreferenceManager2;
 
 /**
  * An icon that can appear on in the workspace representing an {@link Folder}.
  */
 public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion,
-        DraggableView, Reorderable {
+        DraggableView, Reorderable, IconSwipeGestureTarget {
 
     private final MultiTranslateDelegate mTranslateDelegate = new MultiTranslateDelegate(this);
     @Thunk ActivityContext mActivity;
@@ -138,6 +142,11 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
     private Animator mDotScaleAnim;
 
     private Rect mTouchArea = new Rect();
+
+    // Lawnchair: Icon swipe gesture feature (folders)
+    private IconGestureListener mGestureListener;
+    private int mGestureListenerItemId = ItemInfo.NO_ID;
+    private boolean mShouldHandleIconSwipeTouch;
 
     private float mScaleForReorderBounce = 1f;
 
@@ -708,12 +717,82 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
             return false;
         }
 
+        // Lawnchair: Icon swipe gesture feature (folders)
+        if (handleIconSwipeTouchEvent(event)) {
+            return true;
+        }
+
         // Call the superclass onTouchEvent first, because sometimes it changes the state to
         // isPressed() on an ACTION_UP
         super.onTouchEvent(event);
         mLongPressHelper.onTouchEvent(event);
         // Keep receiving the rest of the events
         return true;
+    }
+
+    // Lawnchair: Icon swipe gesture feature (folders). Only for folders on the home screen or
+    // in the dock; app drawer folders live in a separate database with their own ids.
+    private boolean supportsIconSwipeGestures() {
+        return mInfo != null && mInfo.id != ItemInfo.NO_ID
+                && (mInfo.container == LauncherSettings.Favorites.CONTAINER_DESKTOP
+                || mInfo.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT)
+                && mActivity instanceof Launcher launcher
+                && !launcher.isInState(LauncherState.EDIT_MODE);
+    }
+
+    @Nullable
+    private IconGestureListener getIconGestureListener() {
+        if (!supportsIconSwipeGestures()) {
+            return null;
+        }
+        if (mGestureListener == null || mGestureListenerItemId != mInfo.id) {
+            mGestureListener = new IconGestureListener(this,
+                    PreferenceManager2.getInstance(getContext()), null, mInfo.id);
+            mGestureListenerItemId = mInfo.id;
+        }
+        return mGestureListener;
+    }
+
+    @Override
+    public boolean hasConfiguredHorizontalIconSwipeGesture() {
+        IconGestureListener listener = getIconGestureListener();
+        return listener != null && listener.hasHorizontalGestureConfigured();
+    }
+
+    @Override
+    public boolean hasConfiguredVerticalIconSwipeGesture() {
+        IconGestureListener listener = getIconGestureListener();
+        return listener != null && listener.hasVerticalGestureConfigured();
+    }
+
+    private boolean handleIconSwipeTouchEvent(MotionEvent event) {
+        IconGestureListener listener = getIconGestureListener();
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_DOWN) {
+            mShouldHandleIconSwipeTouch = listener != null && listener.hasAnyGestureConfigured();
+        }
+        if (!mShouldHandleIconSwipeTouch || listener == null) {
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                mShouldHandleIconSwipeTouch = false;
+            }
+            return false;
+        }
+
+        boolean handled = listener.onTouchEvent(event);
+        if (handled) {
+            MotionEvent cancelEvent = MotionEvent.obtain(event);
+            cancelEvent.setAction(MotionEvent.ACTION_CANCEL);
+            super.onTouchEvent(cancelEvent);
+            mLongPressHelper.onTouchEvent(cancelEvent);
+            cancelEvent.recycle();
+            setPressed(false);
+            mShouldHandleIconSwipeTouch = false;
+            return true;
+        }
+        if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+            mShouldHandleIconSwipeTouch = false;
+        }
+        return false;
     }
 
     /**

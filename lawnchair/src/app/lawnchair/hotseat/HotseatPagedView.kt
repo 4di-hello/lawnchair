@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
-import com.android.launcher3.BubbleTextView
+import app.lawnchair.gestures.IconSwipeGestureTarget
 import com.android.launcher3.CellLayout
 import com.android.launcher3.DeviceProfile
 import com.android.launcher3.PagedView
@@ -152,7 +152,7 @@ class HotseatPagedView @JvmOverloads constructor(
             val containerY = pageY - container.top
             for (j in container.childCount - 1 downTo 0) {
                 val child = container.getChildAt(j)
-                if (child !is BubbleTextView || child.visibility != VISIBLE) continue
+                if (child !is IconSwipeGestureTarget || child.visibility != VISIBLE) continue
                 if (Utilities.pointInView(child, containerX - child.left, containerY - child.top, 0f)) {
                     return child.hasConfiguredHorizontalIconSwipeGesture()
                 }

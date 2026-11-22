@@ -147,6 +147,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import app.lawnchair.hotseat.HotseatPagedView;
+import app.lawnchair.gestures.IconSwipeGestureTarget;
+import app.lawnchair.ui.popup.FolderGesturesPopup;
 import app.lawnchair.gestures.PanToMoveController;
 import app.lawnchair.preferences2.PreferenceCacheExtensionsKt;
 import static app.lawnchair.util.LawnchairUtilsKt.toBitmap;
@@ -1252,20 +1254,17 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
 
     // Lawnchair: Icon swipe gesture feature
     public boolean isTouchOnIconWithSwipeGesture(float x, float y, boolean vertical) {
-        boolean hasConfiguredIconSwipeGesture = false;
-        BubbleTextView touchedIcon = findIconAtPosition(x, y);
-        if (touchedIcon != null) {
-            if (vertical) {
-                hasConfiguredIconSwipeGesture = touchedIcon.hasConfiguredVerticalIconSwipeGesture();
-            } else {
-                hasConfiguredIconSwipeGesture = touchedIcon.hasConfiguredHorizontalIconSwipeGesture();
-            }
+        IconSwipeGestureTarget touchedIcon = findIconAtPosition(x, y);
+        if (touchedIcon == null) {
+            return false;
         }
-        return hasConfiguredIconSwipeGesture;
+        return vertical
+                ? touchedIcon.hasConfiguredVerticalIconSwipeGesture()
+                : touchedIcon.hasConfiguredHorizontalIconSwipeGesture();
     }
 
     // Lawnchair: Icon swipe gesture feature
-    private BubbleTextView findIconAtPosition(float x, float y) {
+    private IconSwipeGestureTarget findIconAtPosition(float x, float y) {
         for (int i = getChildCount() - 1; i >= 0; i--) {
             View child = getChildAt(i);
             if (!(child instanceof CellLayout cellLayout)) {
@@ -1276,7 +1275,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
             if (!Utilities.pointInView(cellLayout, localX, localY, 0)) {
                 continue;
             }
-            BubbleTextView foundView = findIconInCellLayout(cellLayout, localX, localY);
+            IconSwipeGestureTarget foundView = findIconInCellLayout(cellLayout, localX, localY);
             if (foundView != null) {
                 return foundView;
             }
@@ -1284,14 +1283,14 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         return null;
     }
 
-    // Lawnchair: Icon swipe gesture feature
-    private BubbleTextView findIconInCellLayout(CellLayout cellLayout, float x, float y) {
+    // Lawnchair: Icon swipe gesture feature (app icons and folders)
+    private IconSwipeGestureTarget findIconInCellLayout(CellLayout cellLayout, float x, float y) {
         ShortcutAndWidgetContainer container = cellLayout.getShortcutsAndWidgets();
         float containerX = x - container.getLeft();
         float containerY = y - container.getTop();
         for (int i = container.getChildCount() - 1; i >= 0; i--) {
             View child = container.getChildAt(i);
-            if (!(child instanceof BubbleTextView bubbleTextView)
+            if (!(child instanceof IconSwipeGestureTarget target)
                     || child.getVisibility() != VISIBLE) {
                 continue;
             }
@@ -1299,7 +1298,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
                     containerX - child.getLeft(),
                     containerY - child.getTop(),
                     0)) {
-                return bubbleTextView;
+                return target;
             }
         }
         return null;
@@ -1995,6 +1994,9 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
             if (btv.isDisplaySearchResult()) {
                 dragOptions.preDragEndScale = (float) mAllAppsIconSize / btv.getIconSize();
             }
+        } else if (child instanceof FolderIcon folderIcon && !dragOptions.isAccessibleDrag) {
+            // Lawnchair: long-press menu on home screen folders (folder swipe gestures)
+            dragOptions.preDragCondition = FolderGesturesPopup.startLongPressAction(folderIcon);
         }
 
         boolean lockHomeScreen = PreferenceCacheExtensionsKt.firstCached(mPreferenceManager2.getLockHomeScreen());
