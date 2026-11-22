@@ -126,7 +126,9 @@ class HotseatPagedView @JvmOverloads constructor(
                     return false
                 }
             }
+
             MotionEvent.ACTION_MOVE -> if (disallowInterceptForIconSwipe) return false
+
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> if (disallowInterceptForIconSwipe) {
                 disallowInterceptForIconSwipe = false
                 resetTouchState()

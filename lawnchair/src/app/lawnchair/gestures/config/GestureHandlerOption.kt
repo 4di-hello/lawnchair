@@ -42,8 +42,7 @@ sealed class GestureHandlerOption(
         R.drawable.ic_launcher_home,
         GestureHandlerConfig.OpenApp::class.java,
     ) {
-        override fun matches(config: GestureHandlerConfig) =
-            config is GestureHandlerConfig.OpenApp && config.target is OpenAppTarget.App
+        override fun matches(config: GestureHandlerConfig) = config is GestureHandlerConfig.OpenApp && config.target is OpenAppTarget.App
 
         override suspend fun buildConfig(activity: Activity): GestureHandlerConfig? {
             val intent = PreferenceActivity.createIntent(activity, GesturesPickApp)
@@ -59,8 +58,7 @@ sealed class GestureHandlerOption(
         R.drawable.ic_launcher_home,
         GestureHandlerConfig.OpenApp::class.java,
     ) {
-        override fun matches(config: GestureHandlerConfig) =
-            config is GestureHandlerConfig.OpenApp && config.target is OpenAppTarget.Shortcut
+        override fun matches(config: GestureHandlerConfig) = config is GestureHandlerConfig.OpenApp && config.target is OpenAppTarget.Shortcut
 
         override suspend fun buildConfig(activity: Activity): GestureHandlerConfig? {
             val intent = PreferenceActivity.createIntent(activity, GesturesPickShortcut)
