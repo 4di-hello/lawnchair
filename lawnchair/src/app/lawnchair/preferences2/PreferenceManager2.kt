@@ -488,12 +488,6 @@ class PreferenceManager2 @Inject constructor(
         defaultValue = context.resources.getBoolean(R.bool.config_default_auto_show_keyboard_in_drawer),
     )
 
-    // LC fork: swipe down in the app drawer opens the search with the keyboard.
-    val swipeDownInDrawerOpensSearch = preference(
-        key = booleanPreferencesKey(name = "swipe_down_in_drawer_opens_search"),
-        defaultValue = false,
-    )
-
     val workspaceTextColor = preference(
         key = stringPreferencesKey(name = "workspace_text_color"),
         defaultValue = ColorMode.AUTO,

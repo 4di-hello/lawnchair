@@ -35,7 +35,6 @@ import app.lawnchair.LawnchairApp.Companion.showQuickstepWarningIfNecessary
 import app.lawnchair.compat.LawnchairQuickstepCompat
 import app.lawnchair.data.AppDatabase
 import app.lawnchair.data.wallpaper.service.WallpaperService
-import app.lawnchair.gestures.DrawerSwipeDownSearchController
 import app.lawnchair.gestures.GestureController
 import app.lawnchair.gestures.VerticalSwipeTouchController
 import app.lawnchair.gestures.config.GestureHandlerConfig
@@ -311,9 +310,7 @@ class LawnchairLauncher : QuickstepLauncher() {
 
     override fun createTouchControllers(): Array<TouchController> {
         val verticalSwipeController = VerticalSwipeTouchController(this, gestureController)
-        val drawerSwipeDownSearchController = DrawerSwipeDownSearchController(this)
-        return arrayOf<TouchController>(drawerSwipeDownSearchController, verticalSwipeController) +
-            super.createTouchControllers()
+        return arrayOf<TouchController>(verticalSwipeController) + super.createTouchControllers()
     }
 
     override fun handleHomeTap() {

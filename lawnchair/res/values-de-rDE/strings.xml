@@ -768,7 +768,6 @@
     <string name="pref_category_search">Suchen</string>
     <string name="show_app_search_bar">Suchleiste anzeigen</string>
     <string name="pref_search_auto_show_keyboard">Tastatur automatisch anzeigen</string>
-    <string name="pref_swipe_down_in_drawer_opens_search">Nach unten wischen öffnet die Suche</string>
     <string name="fuzzy_search_title">Unscharfe Suche</string>
     <string name="fuzzy_search_desc">Ungefähre Übereinstimmung für Anwendungssuche</string>
     <string name="show_suggested_apps_at_drawer_top">App-Vorschläge oben in der App-Übersicht anzeigen</string>
