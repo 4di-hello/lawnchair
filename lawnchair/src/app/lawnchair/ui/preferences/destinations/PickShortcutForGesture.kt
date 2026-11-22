@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import app.lawnchair.gestures.config.GestureHandlerConfig
@@ -45,7 +46,9 @@ private data class ShortcutEntry(
  * "new message" action) so that one can be bound to a gesture.
  */
 @Composable
-fun PickShortcutForGesture() {
+fun PickShortcutForGesture(
+    modifier: Modifier = Modifier,
+) {
     val context = LocalContext.current
     val activity = context as Activity
     val msdlPlayer = MSDLPlayerWrapper.INSTANCE.get(context)
@@ -68,6 +71,7 @@ fun PickShortcutForGesture() {
     PreferenceScaffold(
         label = stringResource(id = R.string.pick_shortcut_for_gesture),
         isExpandedScreen = LocalIsExpandedScreen.current,
+        modifier = modifier,
     ) { padding ->
         val list = shortcuts
         when {
