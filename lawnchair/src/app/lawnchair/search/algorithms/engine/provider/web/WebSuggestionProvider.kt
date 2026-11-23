@@ -25,7 +25,8 @@ object WebSuggestionProvider : SearchProvider {
         val prefs = PreferenceManager.getInstance(context)
         val prefs2 = PreferenceManager2.getInstance(context)
 
-        if (query.isBlank() || !prefs.searchResultStartPageSuggestion.get()) {
+        // Fork: no network access except for updates, so never fetch web suggestions.
+        if (NETWORK_SUGGESTIONS_DISABLED || query.isBlank() || !prefs.searchResultStartPageSuggestion.get()) {
             return flow { emit(emptyList()) }
         }
 
@@ -55,3 +56,6 @@ object WebSuggestionProvider : SearchProvider {
 
     const val TAG: String = "WebSuggestionProvider"
 }
+
+// Fork: see search(); web suggestions would send every typed query to the search engine.
+private const val NETWORK_SUGGESTIONS_DISABLED = true

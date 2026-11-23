@@ -103,7 +103,8 @@ fun ContributorRow(
         },
         startWidget = {
             SubcomposeAsyncImage(
-                model = photoUrl,
+                // Fork: no network access except for updates, so no avatars from GitHub.
+                model = null,
                 contentDescription = null,
                 modifier = Modifier
                     .clip(CircleShape)

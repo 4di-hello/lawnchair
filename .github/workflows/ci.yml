@@ -47,7 +47,8 @@ jobs:
         with:
           cache-encryption-key: Da25KUVSE5jbGds2zXmfXw==
       - name: Write sign info
-        if: github.repository_owner == 'LawnchairLauncher'
+        # Fork: also sign builds of 4di-hello/lawnchair once its KEYSTORE secrets exist.
+        if: github.repository_owner == 'LawnchairLauncher' || github.repository_owner == '4di-hello'
         run: |
           if [ ! -z "${{ secrets.KEYSTORE }}" ]; then
             echo storePassword='${{ secrets.KEYSTORE_PASSWORD }}' >> keystore.properties
@@ -146,7 +147,13 @@ jobs:
   nightly-release:
     runs-on: ubuntu-latest
     needs: final-status
-    if: needs.final-status.outputs.publish_nightly == 'true' && github.repository_owner == 'LawnchairLauncher' && github.event_name == 'push' && startsWith(github.ref, 'refs/heads/') && endsWith(github.ref, '-dev')
+    # Fork: 4di-hello/lawnchair publishes its own "nightly" release from gesten-dev, on push
+    # and when the upstream sync starts a build (workflow_dispatch).
+    if: >-
+      needs.final-status.outputs.publish_nightly == 'true' && startsWith(github.ref, 'refs/heads/') &&
+      ((github.repository_owner == 'LawnchairLauncher' && github.event_name == 'push' && endsWith(github.ref, '-dev')) ||
+      (github.repository == '4di-hello/lawnchair' && github.ref == 'refs/heads/gesten-dev' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')))
     permissions:
       contents: write
     steps:

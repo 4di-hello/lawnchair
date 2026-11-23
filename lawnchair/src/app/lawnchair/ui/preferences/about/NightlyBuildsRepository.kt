@@ -43,8 +43,8 @@ class NightlyBuildsRepository(
                 val nightly = releases.firstOrNull { it.tagName == "nightly" }
                 val asset = nightly?.assets?.firstOrNull()
 
-                val majorVersion = applicationContext.getApkVersionComparison().first[0]
-                val expectedBranch = "$majorVersion-dev"
+                // Fork: nightly builds are published from the fork's working branch.
+                val expectedBranch = FORK_BRANCH
 
                 if (nightly != null && nightly.targetCommitish != expectedBranch) {
                     Log.d(TAG, "Skipping update from branch ${nightly.targetCommitish}, expected $expectedBranch")
@@ -151,11 +151,8 @@ class NightlyBuildsRepository(
 
     private suspend fun getCommitsSinceCurrentVersion(): List<GitHubCommit>? {
         return try {
-            val majorVersion = applicationContext.getApkVersionComparison().first[0]
-            val branch = "$majorVersion-dev"
-
-            // Get the latest commits (last 100)
-            val commits = api.getRepositoryCommits("LawnchairLauncher", "lawnchair", branch)
+            // Get the latest commits (last 100) of the fork's working branch
+            val commits = api.getRepositoryCommits(FORK_OWNER, FORK_REPO, FORK_BRANCH)
 
             // Find the index of current commit
             val currentIndex = commits.indexOfFirst { it.sha.startsWith(currentCommitHash) }
@@ -259,3 +256,8 @@ private fun Context.isApkMajorVersionNewer(apkFile: File): Boolean {
 }
 
 private const val MAX_FALLBACK_COMMITS = 30
+
+// Fork: where nightly updates are published.
+private const val FORK_OWNER = "4di-hello"
+private const val FORK_REPO = "lawnchair"
+private const val FORK_BRANCH = "gesten-dev"

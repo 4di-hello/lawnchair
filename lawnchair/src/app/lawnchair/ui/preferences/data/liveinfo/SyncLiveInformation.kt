@@ -15,10 +15,13 @@ fun SyncLiveInformation(
     val endpoint by liveInformationManager.endpoint.asState()
 
     LaunchedEffect(enabled, endpoint) {
-        if (enabled) {
+        // Fork: no network access except for updates, so announcements are never fetched.
+        if (enabled && LIVE_INFORMATION_ALLOWED) {
             getLiveInformation(endpoint)?.let { liveInformation ->
                 liveInformationManager.liveInformation.set(liveInformation)
             }
         }
     }
 }
+
+private const val LIVE_INFORMATION_ALLOWED = false

@@ -51,6 +51,8 @@ class AboutViewModel(
         }
 
         viewModelScope.launch(Dispatchers.Default) {
+            // Fork: no network access except for updates, so skip the GitHub activity lookup.
+            if (!CONTRIBUTOR_ACTIVITY_ALLOWED) return@launch
             val activeContributors = fetchActiveContributors()
             val updatedCoreTeam = uiState.value.coreTeam.map { member ->
                 val status = if (member.githubUsername != null && activeContributors.contains(member.githubUsername.lowercase())) ContributorStatus.Active else ContributorStatus.Idle
@@ -252,3 +254,5 @@ class AboutViewModel(
         )
     }
 }
+
+private const val CONTRIBUTOR_ACTIVITY_ALLOWED = false

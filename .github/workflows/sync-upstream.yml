@@ -1,0 +1,54 @@
+# Fork: keeps 4di-hello/lawnchair up to date with LawnchairLauncher/lawnchair.
+# Every Monday (and on demand) it merges upstream 16-dev into gesten-dev and starts a build,
+# which then publishes the fork's "nightly" release for the in-app updater.
+# If the merge conflicts, the run fails (GitHub sends a mail) and nothing is pushed.
+#
+# Upstream changes to files in .github/workflows can only be pushed with a personal access
+# token that has the "workflow" scope. Store it as the secret SYNC_TOKEN to cover that case.
+name: Sync upstream
+
+on:
+  schedule:
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  sync:
+    if: github.repository == '4di-hello/lawnchair'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: gesten-dev
+          fetch-depth: 0
+          token: ${{ secrets.SYNC_TOKEN || github.token }}
+      - name: Merge upstream 16-dev
+        id: merge
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/LawnchairLauncher/lawnchair.git
+          git fetch upstream 16-dev
+          # Keep the fork's 16-dev as a plain mirror of upstream (base for pull requests).
+          git push origin refs/remotes/upstream/16-dev:refs/heads/16-dev || echo "Could not update the 16-dev mirror"
+          before=$(git rev-parse HEAD)
+          if ! git merge --no-edit upstream/16-dev; then
+            git merge --abort
+            echo "::error::Merge conflict with upstream 16-dev. Please resolve it manually (or ask Claude)."
+            exit 1
+          fi
+          if [ "$(git rev-parse HEAD)" != "$before" ]; then
+            git push origin gesten-dev
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Already up to date."
+          fi
+      - name: Build and publish
+        if: steps.merge.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run ci.yml --ref gesten-dev

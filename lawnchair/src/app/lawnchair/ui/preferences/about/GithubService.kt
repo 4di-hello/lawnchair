@@ -20,7 +20,8 @@ import retrofit2.http.Url
  * It uses Retrofit for making HTTP requests and kotlinx.serialization for JSON parsing.
  */
 interface GitHubService {
-    @GET("repos/LawnchairLauncher/lawnchair/releases")
+    // Fork: updates come from the fork's own "nightly" release.
+    @GET("repos/4di-hello/lawnchair/releases")
     suspend fun getReleases(): List<GitHubRelease>
 
     @GET("repos/{owner}/{repo}/events")
