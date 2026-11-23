@@ -132,6 +132,7 @@ fun AppGesturePreference(
         onSave = { prefs.setGestureForApp(cmp, gestureType, it) },
         label = label,
         modifier = modifier,
+        appKey = cmp,
     )
 }
 
@@ -163,6 +164,7 @@ fun ItemGesturePreference(
         onSave = { prefs.setGestureForItem(itemId, gestureType, it) },
         label = label,
         modifier = modifier,
+        appKey = fallback,
     )
 }
 
@@ -172,6 +174,7 @@ private fun GestureTargetPreference(
     onSave: suspend (GestureHandlerConfig) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
+    appKey: ComponentKey? = null,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -206,6 +209,10 @@ private fun GestureTargetPreference(
             mMSDLPlayerWrapper.playToken(MSDLToken.TAP_MEDIUM_EMPHASIS)
             val intent = Intent(context, LawnchairShortcutActivity::class.java).apply {
                 putExtra(LawnchairShortcutActivity.EXTRA_RESULT_RECEIVER, resultReceiver)
+                if (appKey != null) {
+                    putExtra(LawnchairShortcutActivity.EXTRA_APP_PACKAGE, appKey.componentName.packageName)
+                    putExtra(LawnchairShortcutActivity.EXTRA_APP_USER, appKey.user)
+                }
             }
             context.startActivity(intent)
         },

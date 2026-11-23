@@ -542,7 +542,9 @@
     <string name="gesture_handler_open_search">Suche öffnen</string>
     <string name="gesture_handler_open_assistant">Assistent-App öffnen</string>
     <string name="pick_app_for_gesture">App auswählen</string>
-    <string name="gesture_handler_open_shortcut_option">App-Verknüpfung öffnen</string>
+    <string name="gesture_handler_open_shortcut_option">Verknüpfung einer anderen App öffnen</string>
+    <string name="gesture_app_shortcuts_heading">Verknüpfungen von %1$s</string>
+    <string name="gesture_actions_general_heading">Allgemein</string>
     <string name="pick_shortcut_for_gesture">App-Verknüpfung auswählen</string>
     <string name="pick_shortcut_for_gesture_empty">Keine App-Verknüpfungen gefunden. Lawnchair muss als Standard-Startbildschirm eingestellt sein.</string>
     <string name="gesture_shortcut_unavailable">Diese Verknüpfung ist nicht mehr verfügbar</string>
