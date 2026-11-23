@@ -90,8 +90,6 @@ class LawnchairBackup(
 
         val dbController = ModelDbController(context)
         RestoreDbTask.performRestore(context, dbController)
-        // Fork: offer to set up the restored widgets one after another.
-        WidgetSetupAfterRestore.markRestored(context)
     }
 
     private fun writeGridState(context: Context, gridState: LawnchairProto.GridState) {

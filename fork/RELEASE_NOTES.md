@@ -1,6 +1,7 @@
 **TL;DR:** Christians Lawnchair-Fork, Stand 23.11.2026. Gesten auf App-Symbolen funktionieren jetzt in alle vier Richtungen, auch auf Ordnern und pro Element. Sie können auch Verknüpfungen öffnen, etwa einen bestimmten Chat. Ins Internet geht der Launcher nur noch für Updates.
 
 ## Neu in diesem Stand
+- **Wiederherstellen:** Die Einrichtungsdialoge der Widgets öffnen sich nicht mehr von selbst nacheinander.
 - **Automatische Sicherung:** Einstellungen → Sichern und Wiederherstellen. Ordner wählen, Abstand und Anzahl einstellen.
 - **Gesten auf Symbolen:** Übersicht aller Wischgesten unter Einstellungen → Gesten, zum Ändern und Löschen.
 - **Launcher-Einstellungen in der App-Suche:** z. B. „Symbolgröße“ in der App-Übersicht eintippen.
@@ -21,7 +22,6 @@
   - Abgeschaltet sind Websuche-Vorschläge, Ankündigungen von Lawnchair, der Abruf der Mitwirkenden und der Log-Upload.
   - Der Updater prüft nur die Releases dieses Forks.
 - **Weniger Berechtigungen:** Lesezeichen und Verlauf sowie der Vordergrunddienst sind entfernt.
-- **Widgets nach dem Wiederherstellen:** Nach einer Wiederherstellung öffnet der Launcher den Einrichtungsdialog der Widgets nacheinander, statt dass jedes einzeln angetippt werden muss.
 - **Automatisch aktuell:** Jeden Montag wird der Fork mit Lawnchair abgeglichen und neu gebaut. Der Updater in den Einstellungen unter „Über“ zeigt die neue Version an.
 
 ## Installieren
