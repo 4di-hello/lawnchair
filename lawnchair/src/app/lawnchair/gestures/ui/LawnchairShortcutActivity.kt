@@ -21,8 +21,8 @@ import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.os.Bundle
-import android.os.UserHandle
 import android.os.ResultReceiver
+import android.os.UserHandle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -74,6 +74,7 @@ class LawnchairShortcutActivity : ComponentActivity() {
 
                             @Suppress("DEPRECATION")
                             val resultReceiver = intent.getParcelableExtra<ResultReceiver>(EXTRA_RESULT_RECEIVER)
+
                             @Suppress("DEPRECATION")
                             val appUser = intent.getParcelableExtra<UserHandle>(EXTRA_APP_USER)
                             CreateActionsScreen(
