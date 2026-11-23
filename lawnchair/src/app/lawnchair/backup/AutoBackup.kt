@@ -57,11 +57,11 @@ object AutoBackup {
     /** Last result for the settings screen: time of the last backup and the last error. */
     data class Status(val lastTime: Long, val lastError: String?)
 
-    private val _status = MutableStateFlow<Status?>(null)
+    private val statusFlow = MutableStateFlow<Status?>(null)
 
     fun status(context: Context): StateFlow<Status?> {
-        if (_status.value == null) _status.value = readStatus(context)
-        return _status.asStateFlow()
+        if (statusFlow.value == null) statusFlow.value = readStatus(context)
+        return statusFlow.asStateFlow()
     }
 
     /** Called when the home screen is left; starts a backup if one is due. */
@@ -187,6 +187,6 @@ object AutoBackup {
             putLong(KEY_LAST_TIME, status.lastTime)
             putString(KEY_LAST_ERROR, status.lastError)
         }
-        _status.value = status
+        statusFlow.value = status
     }
 }
