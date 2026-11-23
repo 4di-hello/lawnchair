@@ -13,11 +13,18 @@ import app.lawnchair.gestures.handlers.OpenAppTarget
 import app.lawnchair.util.toBitmap
 import com.android.launcher3.pm.UserCache
 
-/** LC: one app shortcut (dynamic, manifest or pinned) that a gesture can open. */
+/**
+ * LC: one app shortcut (dynamic, manifest or pinned) that a gesture can open. [label] combines
+ * the app and the shortcut ("App: Shortcut"), [shortcutLabel] is the shortcut alone and
+ * [appLabel]/[appIcon] describe the app it belongs to, for lists grouped by app.
+ */
 data class AppShortcutEntry(
     val label: String,
     val icon: Bitmap,
     val target: OpenAppTarget.Shortcut,
+    val shortcutLabel: String = label,
+    val appLabel: String = label,
+    val appIcon: Bitmap = icon,
 ) {
     fun toGestureConfig(): GestureHandlerConfig = GestureHandlerConfig.OpenApp(appName = label, target = target)
 }
@@ -46,6 +53,7 @@ object AppShortcuts {
         if (packageName != null) query.setPackage(packageName)
         val users = if (user != null) listOf(user) else UserCache.INSTANCE.get(context).userProfiles
         val result = mutableListOf<AppShortcutEntry>()
+        val appIcons = mutableMapOf<Pair<String, UserHandle>, Bitmap>()
         for (profile in users) {
             val infos: List<ShortcutInfo> = try {
                 launcherApps.getShortcuts(query, profile).orEmpty()
@@ -68,10 +76,21 @@ object AppShortcuts {
                     null
                 } ?: pm.defaultActivityIcon
                 val label = if (shortcutLabel.isEmpty()) appLabel else "$appLabel: $shortcutLabel"
+                val appIcon = appIcons.getOrPut(info.`package` to info.userHandle) {
+                    val drawable = try {
+                        pm.getUserBadgedIcon(pm.getApplicationIcon(info.`package`), info.userHandle)
+                    } catch (_: Exception) {
+                        pm.defaultActivityIcon
+                    }
+                    drawable.toBitmap()
+                }
                 result += AppShortcutEntry(
                     // Adds e.g. "Work" for shortcuts of another profile (also read by TalkBack).
                     label = pm.getUserBadgedLabel(label, info.userHandle).toString(),
                     icon = icon.toBitmap(),
+                    shortcutLabel = shortcutLabel.ifEmpty { appLabel },
+                    appLabel = pm.getUserBadgedLabel(appLabel, info.userHandle).toString(),
+                    appIcon = appIcon,
                     target = OpenAppTarget.Shortcut(
                         intent = Intent(Intent.ACTION_MAIN).setPackage(info.`package`),
                         user = info.userHandle,
@@ -82,6 +101,6 @@ object AppShortcuts {
             }
         }
         return result.distinctBy { Triple(it.target.packageName, it.target.id, it.target.user) }
-            .sortedBy { it.label.lowercase() }
+            .sortedWith(compareBy({ it.appLabel.lowercase() }, { it.shortcutLabel.lowercase() }))
     }
 }

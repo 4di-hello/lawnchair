@@ -1,9 +1,10 @@
-**TL;DR:** Christians Lawnchair-Fork, Stand 23.11.2026, Korrekturen an der Sicherung. Gesten auf App-Symbolen funktionieren jetzt in alle vier Richtungen, auch auf Ordnern und pro Element. Sie können auch Verknüpfungen öffnen, etwa einen bestimmten Chat. Ins Internet geht der Launcher nur noch für Updates.
+**TL;DR:** Christians Lawnchair-Fork, Stand 23.11.2026. Gesten auf App-Symbolen funktionieren jetzt in alle vier Richtungen, auch auf Ordnern und pro Element. Sie können auch Verknüpfungen öffnen, etwa einen bestimmten Chat. Ins Internet geht der Launcher nur noch für Updates.
 
 ## Neu in diesem Stand
-- **Sicherung enthält die letzten Änderungen:** Änderungen an Startbildschirm, Symbolen und Ordnern der App-Übersicht konnten noch im Zwischenspeicher der Datenbank liegen und fehlten dann in der Sicherung. Vor dem Sichern werden sie jetzt in die Datenbank übernommen.
-- **Wiederherstellen behält die Einstellungen:** Bei einem anderen Raster als in der Sicherung konnte die Wiederherstellung einen Teil der Einstellungen, z. B. das Icon-Pack, mit den alten Werten überschreiben.
-- **Widget-Einrichtung nach dem Wiederherstellen** startet jetzt zuverlässig.
+- **Icon-Größe in 5-%-Schritten** auf dem Startbildschirm und in der App-Übersicht.
+- **Verknüpfungen anderer Apps nach App gruppiert:** Erst die App antippen, dann klappen ihre Verknüpfungen auf.
+- **Ordner umbenennen:** Ordner lange drücken, dann „Umbenennen“.
+- **Sicherung:** Die letzten Änderungen kommen mit, und das Wiederherstellen überschreibt keine Einstellungen mehr.
 
 ## Was der Fork gegenüber Lawnchair 16 kann
 - **Wischen nach links und rechts** auf App-Symbolen funktioniert, auf dem Startbildschirm, im Dock und in Ordnern. Im offiziellen Lawnchair lässt sich das einstellen, löst aber nichts aus.

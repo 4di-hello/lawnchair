@@ -547,6 +547,9 @@
     <string name="gesture_actions_general_heading">Allgemein</string>
     <string name="pick_shortcut_for_gesture">App-Verknüpfung auswählen</string>
     <string name="pick_shortcut_for_gesture_empty">Keine App-Verknüpfungen gefunden. Lawnchair muss als Standard-Startbildschirm eingestellt sein.</string>
+    <string name="pick_shortcut_expand">Verknüpfungen anzeigen</string>
+    <string name="pick_shortcut_collapse">Verknüpfungen ausblenden</string>
+    <string name="folder_rename">Umbenennen</string>
     <string name="gesture_shortcut_unavailable">Diese Verknüpfung ist nicht mehr verfügbar</string>
     <string name="dt2s_admin_hint_title">Administrator-Berechtigungen erforderlich</string>
     <string name="dt2s_admin_hint">Um das Display auszuschalten, aktiviere Lawnchair als App zur Geräteverwaltung. Tippe auf \"Einstellungen öffnen\" und dann auf „Diese App zur Geräteverwaltung aktivieren“.</string>

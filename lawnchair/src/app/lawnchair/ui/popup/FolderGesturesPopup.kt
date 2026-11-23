@@ -27,7 +27,8 @@ import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.views.OptionsPopupView
 
 /**
- * LC: Long-pressing a home screen folder shows a small menu to set the folder's swipe gestures.
+ * LC: Long-pressing a home screen folder shows a small menu to rename the folder or set its swipe
+ * gestures.
  * Like the app shortcut popup, it closes as soon as the folder is dragged.
  */
 object FolderGesturesPopup {
@@ -47,6 +48,16 @@ object FolderGesturesPopup {
             launcher,
             RectF(bounds),
             listOf(
+                OptionsPopupView.OptionItem(
+                    launcher,
+                    R.string.folder_rename,
+                    R.drawable.ic_edit,
+                    StatsLogManager.LauncherEvent.IGNORE,
+                ) {
+                    AbstractFloatingView.closeAllOpenViews(launcher, false)
+                    folderIcon.folder.openAndEditName()
+                    true
+                },
                 OptionsPopupView.OptionItem(
                     launcher,
                     R.string.gestures_label,

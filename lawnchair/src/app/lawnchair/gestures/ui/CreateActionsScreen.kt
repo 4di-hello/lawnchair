@@ -78,7 +78,8 @@ fun CreateActionsScreen(
                 heading = { stringResource(id = R.string.gesture_app_shortcuts_heading, appLabel.orEmpty()) },
             ) { _, entry ->
                 AppItem(
-                    label = entry.label,
+                    // The heading already names the app.
+                    label = entry.shortcutLabel,
                     icon = entry.icon,
                     onClick = { onSelect(entry.toGestureConfig()) },
                 )

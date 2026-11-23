@@ -677,6 +677,9 @@
     <string name="gesture_actions_general_heading">General</string>
     <string name="pick_shortcut_for_gesture">Pick app shortcut</string>
     <string name="pick_shortcut_for_gesture_empty">No app shortcuts found. Lawnchair has to be the default home app.</string>
+    <string name="pick_shortcut_expand">Show shortcuts</string>
+    <string name="pick_shortcut_collapse">Hide shortcuts</string>
+    <string name="folder_rename">Rename</string>
     <string name="gesture_shortcut_unavailable">This shortcut is no longer available</string>
 
     <string name="dt2s_admin_hint_title">Admin permissions required</string>
