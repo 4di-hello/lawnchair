@@ -171,4 +171,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release view "nightly" && gh release delete "nightly" -y --cleanup-tag
-          gh release create "nightly" "./$APK_NAME" -p -t "Lawnchair Nightly" --generate-notes
+          # Fork: tag the built branch, the in-app updater checks it (target_commitish).
+          gh release create "nightly" "./$APK_NAME" -p -t "Lawnchair Nightly" --generate-notes --target "${{ github.ref_name }}"
