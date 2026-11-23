@@ -65,7 +65,9 @@ object ShortcutOverrides {
         info.title = title ?: base.first
         info.bitmap = when {
             icon == null -> base.second
+
             icons.containsKey(icon) -> icons[icon] ?: base.second
+
             else -> {
                 load(view, info, icon)
                 base.second

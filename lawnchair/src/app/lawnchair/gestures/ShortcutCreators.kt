@@ -73,6 +73,7 @@ object ShortcutCreators {
         }
         @Suppress("DEPRECATION")
         val intent = data.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT) as? Intent ?: return null
+
         @Suppress("DEPRECATION")
         val name = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
         return GestureHandlerConfig.OpenApp(
