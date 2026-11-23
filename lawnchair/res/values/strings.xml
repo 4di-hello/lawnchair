@@ -680,6 +680,8 @@
     <string name="pick_shortcut_expand">Show shortcuts</string>
     <string name="pick_shortcut_collapse">Hide shortcuts</string>
     <string name="folder_rename">Rename</string>
+    <string name="pick_app_search">Search apps</string>
+    <string name="pick_app_no_results">No matching apps</string>
     <string name="gesture_overview_label">Gestures on icons</string>
     <string name="gesture_overview_description">All swipe gestures on apps, home screen icons and folders</string>
     <string name="gesture_overview_empty">No swipe gestures on icons or folders yet</string>

@@ -1,6 +1,7 @@
 **TL;DR:** Christians Lawnchair-Fork, Stand 23.11.2026. Gesten auf App-Symbolen funktionieren jetzt in alle vier Richtungen, auch auf Ordnern und pro Element. Sie können auch Verknüpfungen öffnen, etwa einen bestimmten Chat. Ins Internet geht der Launcher nur noch für Updates.
 
 ## Neu in diesem Stand
+- **App für eine Geste wählen:** mit Suchfeld.
 - **Eingefügte Verknüpfungen** (z. B. ein Claude-Chat oder ein Discord-Kontakt): Lange drücken → „Anpassen“ zum Umbenennen, Symbol ändern und Gesten einrichten.
 - **Wiederherstellen:** Die Einrichtungsdialoge der Widgets öffnen sich nicht mehr von selbst nacheinander.
 - **Automatische Sicherung:** Einstellungen → Sichern und Wiederherstellen. Ordner wählen, Abstand und Anzahl einstellen.

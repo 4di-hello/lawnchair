@@ -550,6 +550,8 @@
     <string name="pick_shortcut_expand">Verknüpfungen anzeigen</string>
     <string name="pick_shortcut_collapse">Verknüpfungen ausblenden</string>
     <string name="folder_rename">Umbenennen</string>
+    <string name="pick_app_search">Apps suchen</string>
+    <string name="pick_app_no_results">Keine passenden Apps</string>
     <string name="gesture_overview_label">Gesten auf Symbolen</string>
     <string name="gesture_overview_description">Alle Wischgesten auf Apps, Symbolen und Ordnern im Überblick</string>
     <string name="gesture_overview_empty">Noch keine Wischgesten auf Symbolen oder Ordnern</string>
