@@ -38,6 +38,7 @@ import app.lawnchair.ui.ModalBottomSheetContent
 import app.lawnchair.ui.preferences.components.layout.PreferenceDivider
 import app.lawnchair.ui.preferences.components.layout.PreferenceTemplate
 import app.lawnchair.ui.util.LocalBottomSheetHandler
+import com.android.launcher3.R
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.MSDLPlayerWrapper
 import com.google.android.msdl.data.model.MSDLToken
@@ -45,6 +46,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @Composable
@@ -159,12 +161,17 @@ fun ItemGesturePreference(
             }
         }
     }
+    // Marks the description when the shown gesture is the app's, not the item's own.
+    val inheritedFlow = remember(itemId, gestureType) {
+        prefs.getGestureForItem(itemId, gestureType).map { it == null }
+    }
     GestureTargetPreference(
         configFlow = flow,
         onSave = { prefs.setGestureForItem(itemId, gestureType, it) },
         label = label,
         modifier = modifier,
         appKey = fallback,
+        inheritedFlow = if (fallback != null) inheritedFlow else null,
     )
 }
 
@@ -175,6 +182,7 @@ private fun GestureTargetPreference(
     label: String,
     modifier: Modifier = Modifier,
     appKey: ComponentKey? = null,
+    inheritedFlow: Flow<Boolean>? = null,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -182,6 +190,10 @@ private fun GestureTargetPreference(
 
     val currentConfig by produceState<GestureHandlerConfig>(initialValue = GestureHandlerConfig.NoOp, configFlow) {
         configFlow.collect { value = it }
+    }
+
+    val inherited by produceState(initialValue = false, inheritedFlow) {
+        inheritedFlow?.collect { value = it }
     }
 
     val currentOnSave by rememberUpdatedState(onSave)
@@ -203,7 +215,16 @@ private fun GestureTargetPreference(
 
     PreferenceTemplate(
         title = { Text(text = label) },
-        description = { Text(text = currentConfig.getLabel(context)) },
+        description = {
+            val configLabel = currentConfig.getLabel(context)
+            Text(
+                text = if (inherited && currentConfig != GestureHandlerConfig.NoOp) {
+                    stringResource(R.string.gesture_inherited_from_app, configLabel)
+                } else {
+                    configLabel
+                },
+            )
+        },
         modifier = modifier.fillMaxWidth(),
         onClick = {
             mMSDLPlayerWrapper.playToken(MSDLToken.TAP_MEDIUM_EMPHASIS)

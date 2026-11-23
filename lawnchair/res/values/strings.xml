@@ -680,6 +680,12 @@
     <string name="pick_shortcut_expand">Show shortcuts</string>
     <string name="pick_shortcut_collapse">Hide shortcuts</string>
     <string name="folder_rename">Rename</string>
+    <string name="pick_shortcut_search">Search apps and shortcuts</string>
+    <string name="pick_shortcut_no_results">No matching shortcuts</string>
+    <string name="folder_change_icon">Change icon</string>
+    <string name="show_gesture_indicator">Swipe gesture marks</string>
+    <string name="show_gesture_indicator_description">Small marks next to icons and folders show the directions that have a swipe gesture</string>
+    <string name="gesture_inherited_from_app">%1$s (from the app)</string>
     <string name="gesture_shortcut_unavailable">This shortcut is no longer available</string>
 
     <string name="dt2s_admin_hint_title">Admin permissions required</string>

@@ -242,6 +242,11 @@ fun HomeScreenPreferences(
                 showAsPercentage = true,
             )
             SwitchPreference(
+                adapter = prefs2.showGestureIndicator.getAdapter(),
+                label = stringResource(id = R.string.show_gesture_indicator),
+                description = stringResource(id = R.string.show_gesture_indicator_description),
+            )
+            SwitchPreference(
                 adapter = homeScreenLabelsAdapter,
                 label = stringResource(id = R.string.show_labels),
             )

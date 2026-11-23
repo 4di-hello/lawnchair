@@ -113,6 +113,7 @@ import java.util.Objects;
 
 import app.lawnchair.preferences2.PreferenceCacheExtensionsKt;
 import app.lawnchair.font.FontManager;
+import app.lawnchair.gestures.GestureIndicator;
 import app.lawnchair.gestures.IconGestureListener;
 import app.lawnchair.gestures.IconSwipeGestureTarget;
 import app.lawnchair.preferences.PreferenceManager;
@@ -256,6 +257,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
 
     private final PreferenceManager2 pref2;
     private IconGestureListener mGestureListener;
+    private final Rect mGestureIndicatorBounds = new Rect();
     private boolean mShouldHandleIconSwipeTouch; // Lawnchair: Icon swipe gesture feature
 
     public BubbleTextView(Context context) {
@@ -931,6 +933,24 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         super.onDraw(canvas);
         drawDotIfNecessary(canvas);
         drawRunningAppIndicatorIfNecessary(canvas);
+        drawGestureIndicatorIfNecessary(canvas);
+    }
+
+    /** LC: marks on the sides of the icon that have a swipe gesture. */
+    private void drawGestureIndicatorIfNecessary(Canvas canvas) {
+        if (mGestureListener == null || !isIconSwipeGestureEnabledForCurrentState()
+                || !GestureIndicator.isEnabled(this)) {
+            return;
+        }
+        Rect bounds = mGestureIndicatorBounds;
+        getIconBounds(bounds);
+        Utilities.scaleRectAboutCenter(bounds, ICON_VISIBLE_AREA_FACTOR);
+        final int scrollX = getScrollX();
+        final int scrollY = getScrollY();
+        canvas.translate(scrollX, scrollY);
+        GestureIndicator.draw(this, canvas, bounds, mGestureListener.configuredGestures(),
+                getCurrentTextColor());
+        canvas.translate(-scrollX, -scrollY);
     }
 
     /**

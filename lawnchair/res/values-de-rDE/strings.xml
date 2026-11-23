@@ -550,6 +550,12 @@
     <string name="pick_shortcut_expand">Verknüpfungen anzeigen</string>
     <string name="pick_shortcut_collapse">Verknüpfungen ausblenden</string>
     <string name="folder_rename">Umbenennen</string>
+    <string name="pick_shortcut_search">Apps und Verknüpfungen suchen</string>
+    <string name="pick_shortcut_no_results">Keine passenden Verknüpfungen</string>
+    <string name="folder_change_icon">Symbol ändern</string>
+    <string name="show_gesture_indicator">Hinweis auf Wischgesten</string>
+    <string name="show_gesture_indicator_description">Kleine Striche neben Symbolen und Ordnern zeigen, in welche Richtungen eine Wischgeste hinterlegt ist</string>
+    <string name="gesture_inherited_from_app">%1$s (von der App)</string>
     <string name="gesture_shortcut_unavailable">Diese Verknüpfung ist nicht mehr verfügbar</string>
     <string name="dt2s_admin_hint_title">Administrator-Berechtigungen erforderlich</string>
     <string name="dt2s_admin_hint">Um das Display auszuschalten, aktiviere Lawnchair als App zur Geräteverwaltung. Tippe auf \"Einstellungen öffnen\" und dann auf „Diese App zur Geräteverwaltung aktivieren“.</string>

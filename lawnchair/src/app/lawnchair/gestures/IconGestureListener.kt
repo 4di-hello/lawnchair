@@ -84,6 +84,9 @@ class IconGestureListener(
         }
     }
 
+    /** LC: the swipe directions that have a gesture, for the gesture indicator. */
+    fun configuredGestures(): Set<GestureType> = getConfiguredGestures()
+
     /** Check if there's any gesture configured for this entry */
     fun hasAnyGestureConfigured(): Boolean {
         return getConfiguredGestures().isNotEmpty()

@@ -12,8 +12,10 @@ import androidx.compose.ui.unit.dp
 import app.lawnchair.LawnchairLauncher
 import app.lawnchair.gestures.type.GestureType
 import app.lawnchair.launcherNullable
+import app.lawnchair.ui.preferences.PreferenceActivity
 import app.lawnchair.ui.preferences.components.ItemGesturePreference
 import app.lawnchair.ui.preferences.components.layout.PreferenceGroup
+import app.lawnchair.ui.preferences.navigation.SelectFolderIcon
 import app.lawnchair.views.ComposeBottomSheet
 import com.android.launcher3.AbstractFloatingView
 import com.android.launcher3.DropTarget
@@ -27,8 +29,8 @@ import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.views.OptionsPopupView
 
 /**
- * LC: Long-pressing a home screen folder shows a small menu to rename the folder or set its swipe
- * gestures.
+ * LC: Long-pressing a home screen folder shows a small menu to rename the folder, pick an icon
+ * for it or set its swipe gestures.
  * Like the app shortcut popup, it closes as soon as the folder is dragged.
  */
 object FolderGesturesPopup {
@@ -56,6 +58,17 @@ object FolderGesturesPopup {
                 ) {
                     AbstractFloatingView.closeAllOpenViews(launcher, false)
                     folderIcon.folder.openAndEditName()
+                    true
+                },
+                OptionsPopupView.OptionItem(
+                    launcher,
+                    R.string.folder_change_icon,
+                    R.drawable.ic_palette,
+                    StatsLogManager.LauncherEvent.IGNORE,
+                ) {
+                    launcher.startActivity(
+                        PreferenceActivity.createIntent(launcher, SelectFolderIcon(itemId, title)),
+                    )
                     true
                 },
                 OptionsPopupView.OptionItem(

@@ -92,6 +92,8 @@ import com.android.launcher3.widget.PendingAddShortcutInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import app.lawnchair.folder.FolderCustomIcon;
+import app.lawnchair.gestures.GestureIndicator;
 import app.lawnchair.gestures.IconGestureListener;
 import app.lawnchair.gestures.IconSwipeGestureTarget;
 import app.lawnchair.preferences2.PreferenceManager2;
@@ -607,6 +609,13 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
 
         if (!mBackgroundIsVisible) return;
 
+        // LC: a custom icon picked for this folder replaces its preview.
+        if (mInfo != null && FolderCustomIcon.draw(this, mInfo.id, canvas, getFolderIconBounds())) {
+            drawGestureIndicator(canvas);
+            drawDot(canvas);
+            return;
+        }
+
         mPreviewItemManager.recomputePreviewDrawingParams();
 
         if (!mBackground.drawingDelegated()) {
@@ -621,7 +630,29 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
             mBackground.drawBackgroundStroke(canvas);
         }
 
+        drawGestureIndicator(canvas);
         drawDot(canvas);
+    }
+
+    private final Rect mFolderIconBounds = new Rect();
+
+    /** LC: the icon area of this folder, top-aligned and centered like its preview. */
+    private Rect getFolderIconBounds() {
+        int iconSize = mActivity.getDeviceProfile().iconSizePx;
+        int left = (getWidth() - iconSize) / 2;
+        int top = getPaddingTop();
+        mFolderIconBounds.set(left, top, left + iconSize, top + iconSize);
+        float iconScale = (float) mBackground.previewSize / iconSize;
+        Utilities.scaleRectAboutCenter(mFolderIconBounds, iconScale);
+        return mFolderIconBounds;
+    }
+
+    /** LC: marks on the sides of the folder that have a swipe gesture. */
+    private void drawGestureIndicator(Canvas canvas) {
+        IconGestureListener listener = getIconGestureListener();
+        if (listener == null || !GestureIndicator.isEnabled(this)) return;
+        GestureIndicator.draw(this, canvas, getFolderIconBounds(), listener.configuredGestures(),
+                mFolderName.getCurrentTextColor());
     }
 
     public void drawDot(Canvas canvas) {

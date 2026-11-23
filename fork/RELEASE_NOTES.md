@@ -1,9 +1,11 @@
 **TL;DR:** Christians Lawnchair-Fork, Stand 23.11.2026. Gesten auf App-Symbolen funktionieren jetzt in alle vier Richtungen, auch auf Ordnern und pro Element. Sie können auch Verknüpfungen öffnen, etwa einen bestimmten Chat. Ins Internet geht der Launcher nur noch für Updates.
 
 ## Neu in diesem Stand
-- **Icon-Größe in 5-%-Schritten** auf dem Startbildschirm und in der App-Übersicht.
-- **Verknüpfungen anderer Apps nach App gruppiert:** Erst die App antippen, dann klappen ihre Verknüpfungen auf.
-- **Ordner umbenennen:** Ordner lange drücken, dann „Umbenennen“.
+- **Wisch-Hinweis:** Kleine Striche neben Symbolen und Ordnern zeigen, in welche Richtung eine Geste liegt. Abschaltbar unter Startbildschirm → Symbole.
+- **Ordner:** Lange drücken bietet jetzt „Umbenennen“ und „Symbol ändern“ (Symbol aus einem Icon-Pack).
+- **Verknüpfungen anderer Apps:** nach App gruppiert, zum Aufklappen, mit Suche.
+- **Gesten pro Symbol:** Übernommene Gesten der App sind mit „(von der App)“ markiert.
+- **Icon-Größe in 5-%-Schritten.**
 - **Sicherung:** Die letzten Änderungen kommen mit, und das Wiederherstellen überschreibt keine Einstellungen mehr.
 
 ## Was der Fork gegenüber Lawnchair 16 kann
