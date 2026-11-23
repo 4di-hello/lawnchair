@@ -550,6 +550,9 @@
     <string name="pick_shortcut_expand">Verknüpfungen anzeigen</string>
     <string name="pick_shortcut_collapse">Verknüpfungen ausblenden</string>
     <string name="folder_rename">Umbenennen</string>
+    <string name="pick_shortcut_create">Verknüpfung erstellen</string>
+    <string name="pick_shortcut_create_description">Über die Verknüpfungs-Einrichtung einer App, z. B. eine Tasker-Task</string>
+    <string name="pick_shortcut_create_failed">Die App hat keine Verknüpfung erstellt</string>
     <string name="pick_app_search">Apps suchen</string>
     <string name="pick_app_no_results">Keine passenden Apps</string>
     <string name="gesture_overview_label">Gesten auf Symbolen</string>

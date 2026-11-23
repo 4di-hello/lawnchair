@@ -2,6 +2,11 @@ package app.lawnchair.ui.preferences.destinations
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.LauncherApps
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -25,6 +30,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.lawnchair.gestures.AppShortcutEntry
 import app.lawnchair.gestures.AppShortcuts
+import app.lawnchair.gestures.ShortcutCreator
+import app.lawnchair.gestures.ShortcutCreators
 import app.lawnchair.ui.preferences.components.AppItem
 import app.lawnchair.ui.preferences.components.AppItemPlaceholder
 import app.lawnchair.ui.preferences.components.layout.PreferenceLazyColumn
@@ -58,6 +65,37 @@ fun PickShortcutForGesture(
     val shortcuts by produceState<List<AppShortcutEntry>?>(initialValue = null) {
         value = withContext(Dispatchers.IO) { AppShortcuts.load(context) }
     }
+    // Fork: apps' shortcut setups, e.g. Tasker's task shortcut
+    val creators by produceState(initialValue = emptyList<ShortcutCreator>()) {
+        value = withContext(Dispatchers.IO) { ShortcutCreators.load(context) }
+    }
+    var pendingCreator by remember { mutableStateOf<ShortcutCreator?>(null) }
+    val createShortcut = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+        val creator = pendingCreator ?: return@rememberLauncherForActivityResult
+        pendingCreator = null
+        if (result.resultCode != Activity.RESULT_OK) return@rememberLauncherForActivityResult
+        val config = ShortcutCreators.configFromResult(context, creator, result.data)
+        if (config == null) {
+            Toast.makeText(context, R.string.pick_shortcut_create_failed, Toast.LENGTH_SHORT).show()
+            return@rememberLauncherForActivityResult
+        }
+        activity.setResult(Activity.RESULT_OK, Intent().putExtra("config", kotlinxJson.encodeToString(config)))
+        activity.finish()
+    }
+
+    fun onCreate(creator: ShortcutCreator) {
+        val sender = try {
+            context.getSystemService(LauncherApps::class.java)?.getShortcutConfigActivityIntent(creator.info)
+        } catch (e: Exception) {
+            null
+        }
+        if (sender == null) {
+            Toast.makeText(context, R.string.pick_shortcut_create_failed, Toast.LENGTH_SHORT).show()
+            return
+        }
+        pendingCreator = creator
+        createShortcut.launch(IntentSenderRequest.Builder(sender).build())
+    }
 
     fun onSelect(entry: AppShortcutEntry) {
         val configString = kotlinxJson.encodeToString(entry.toGestureConfig())
@@ -84,7 +122,7 @@ fun PickShortcutForGesture(
                 }
             }
 
-            list.isEmpty() -> PreferenceLazyColumn(padding) {
+            list.isEmpty() && creators.isEmpty() -> PreferenceLazyColumn(padding) {
                 preferenceGroupItems(count = 1, isFirstChild = true) {
                     PreferenceTemplate(
                         title = { Text(text = stringResource(id = R.string.pick_shortcut_for_gesture_empty)) },
@@ -97,8 +135,22 @@ fun PickShortcutForGesture(
                     list.groupBy { it.target.packageName to it.target.user }.values.toList()
                 }
                 val search = query.trim()
-                val rows = remember(groups, expanded.toList(), search) {
-                    groups.flatMap { group ->
+                val rows = remember(groups, creators, expanded.toList(), search) {
+                    // Fork: shortcut setups first, as one group that opens on a tap.
+                    val shownCreators = if (search.isEmpty()) {
+                        creators
+                    } else {
+                        creators.filter { it.label.contains(search, ignoreCase = true) }
+                    }
+                    val creatorRows = when {
+                        shownCreators.isEmpty() -> emptyList()
+
+                        search.isNotEmpty() || CREATORS_KEY in expanded ->
+                            listOf(ShortcutRow.CreatorsHeader) + shownCreators.map { ShortcutRow.Creator(it) }
+
+                        else -> listOf(ShortcutRow.CreatorsHeader)
+                    }
+                    creatorRows + groups.flatMap { group ->
                         val first = group.first()
                         val key = groupKey(first)
                         val header = ShortcutRow.Header(key, first)
@@ -168,6 +220,40 @@ fun PickShortcutForGesture(
                                 )
                             }
 
+                            is ShortcutRow.CreatorsHeader -> {
+                                val isExpanded = search.isNotEmpty() || CREATORS_KEY in expanded
+                                val rotation by animateFloatAsState(if (isExpanded) 180f else 0f, label = "arrow")
+                                PreferenceTemplate(
+                                    title = { Text(text = stringResource(id = R.string.pick_shortcut_create)) },
+                                    description = { Text(text = stringResource(id = R.string.pick_shortcut_create_description)) },
+                                    onClick = {
+                                        msdlPlayer.playToken(MSDLToken.TAP_LOW_EMPHASIS)
+                                        if (CREATORS_KEY in expanded) {
+                                            expanded.remove(CREATORS_KEY)
+                                        } else {
+                                            expanded.add(CREATORS_KEY)
+                                        }
+                                    },
+                                    endWidget = {
+                                        Icon(
+                                            imageVector = Icons.Rounded.KeyboardArrowDown,
+                                            contentDescription = null,
+                                            modifier = Modifier.rotate(rotation),
+                                        )
+                                    },
+                                )
+                            }
+
+                            is ShortcutRow.Creator -> AppItem(
+                                label = row.creator.label,
+                                icon = row.creator.icon,
+                                onClick = {
+                                    msdlPlayer.playToken(MSDLToken.TAP_MEDIUM_EMPHASIS)
+                                    onCreate(row.creator)
+                                },
+                                modifier = Modifier.padding(start = 24.dp),
+                            )
+
                             is ShortcutRow.Child -> AppItem(
                                 label = row.entry.shortcutLabel,
                                 icon = row.entry.icon,
@@ -187,8 +273,18 @@ fun PickShortcutForGesture(
 
 private fun groupKey(entry: AppShortcutEntry) = "${entry.target.packageName}/${entry.target.user.hashCode()}"
 
+private const val CREATORS_KEY = "creators"
+
 private sealed interface ShortcutRow {
     val key: String
+
+    data object CreatorsHeader : ShortcutRow {
+        override val key = "creators"
+    }
+
+    data class Creator(val creator: ShortcutCreator) : ShortcutRow {
+        override val key = "creator:${creator.info.componentName.flattenToString()}/${creator.info.user.hashCode()}"
+    }
 
     data class Header(val groupKey: String, val entry: AppShortcutEntry) : ShortcutRow {
         override val key = "app:$groupKey"

@@ -49,6 +49,17 @@ class OpenAppGestureHandler(
                     Toast.makeText(launcher, R.string.gesture_shortcut_unavailable, Toast.LENGTH_SHORT).show()
                 }
             }
+
+            is OpenAppTarget.LegacyShortcut -> {
+                // Fork: a shortcut created by an app's shortcut setup (e.g. a Tasker task),
+                // which is a plain intent to start.
+                try {
+                    launcher.startActivity(Intent(target.intent).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                } catch (e: Exception) {
+                    Log.w("OpenAppGestureHandler", "Could not start shortcut ${target.intent}", e)
+                    Toast.makeText(launcher, R.string.gesture_shortcut_unavailable, Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }
@@ -68,5 +79,12 @@ sealed class OpenAppTarget {
         @Serializable(UserHandlerSerializer::class) val user: UserHandle,
         val packageName: String,
         val id: String,
+    ) : OpenAppTarget()
+
+    /** Fork: an intent from an app's shortcut setup (ACTION_CREATE_SHORTCUT), e.g. a Tasker task. */
+    @Serializable
+    @SerialName("legacyShortcut")
+    data class LegacyShortcut(
+        @Serializable(IntentSerializer::class) val intent: Intent,
     ) : OpenAppTarget()
 }

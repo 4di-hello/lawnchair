@@ -134,7 +134,7 @@ sealed class GestureHandlerConfig {
     data class OpenApp(val appName: String, val target: OpenAppTarget) : GestureHandlerConfig() {
         override fun getIcon(context: Context): Icon {
             when (target) {
-                is OpenAppTarget.Shortcut -> {
+                is OpenAppTarget.Shortcut, is OpenAppTarget.LegacyShortcut -> {
                     // fallback
                     return Icon.createWithResource(context, iconRes)
                 }
