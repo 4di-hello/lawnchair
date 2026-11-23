@@ -210,6 +210,10 @@ data class SelectIcon(
     val componentKey: String,
 ) : PreferenceRoute
 
+// Fork: all swipe gestures on apps, icons and folders
+@Serializable
+data object GestureOverview : PreferenceRoute
+
 // Fork: search in all settings
 @Serializable
 data object SettingsSearch : PreferenceRootRoute

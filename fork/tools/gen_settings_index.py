@@ -87,6 +87,19 @@ def entries_of(body):
     return found
 
 
+def expanded_body(fname, bodies, screen_fns, depth=2):
+    """A screen's source plus the composables it calls (sections like AutoBackupPreferences),
+    but not other screens, which are indexed on their own."""
+    body = bodies[fname]
+    if depth == 0:
+        return body
+    parts = [body]
+    for called in sorted(set(re.findall(r"\b([A-Z]\w*)\(", body))):
+        if called != fname and called in bodies and called not in screen_fns:
+            parts.append(expanded_body(called, bodies, screen_fns, depth - 1))
+    return "\n".join(parts)
+
+
 def screen_title(body):
     layout = re.search(r"Preference(?:Layout(?:LazyColumn)?|SearchScaffold|Scaffold)\(", body)
     if not layout:
@@ -105,8 +118,8 @@ def main():
     for fname, route in screens.items():
         if route in SKIP_ROUTES or route not in exprs or fname not in bodies:
             continue
-        body = bodies[fname]
-        title = screen_title(body)
+        body = expanded_body(fname, bodies, set(screens))
+        title = screen_title(bodies[fname])
         if title:
             titles[route] = title
         for label, description, is_heading in entries_of(body):

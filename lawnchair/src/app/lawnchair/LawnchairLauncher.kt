@@ -32,6 +32,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import app.lawnchair.LawnchairApp.Companion.showQuickstepWarningIfNecessary
+import app.lawnchair.backup.AutoBackup
 import app.lawnchair.backup.WidgetSetupAfterRestore
 import app.lawnchair.compat.LawnchairQuickstepCompat
 import app.lawnchair.data.AppDatabase
@@ -507,6 +508,12 @@ class LawnchairLauncher : QuickstepLauncher() {
                 }
             },
         )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Fork: the home screen is hidden now, a good moment for a due automatic backup.
+        AutoBackup.onLauncherStopped(this)
     }
 
     override fun onStateSetEnd(state: LauncherState) {

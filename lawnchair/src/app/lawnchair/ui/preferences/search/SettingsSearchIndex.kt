@@ -9,8 +9,10 @@ import app.lawnchair.ui.preferences.navigation.Folders
 import app.lawnchair.ui.preferences.navigation.General
 import app.lawnchair.ui.preferences.navigation.GeneralAdvancedIcons
 import app.lawnchair.ui.preferences.navigation.GeneralCustomIconShapeCreator
+import app.lawnchair.ui.preferences.navigation.GeneralIconPack
 import app.lawnchair.ui.preferences.navigation.GeneralIconShape
 import app.lawnchair.ui.preferences.navigation.GeneralThemedIcons
+import app.lawnchair.ui.preferences.navigation.GestureOverview
 import app.lawnchair.ui.preferences.navigation.Gestures
 import app.lawnchair.ui.preferences.navigation.HomeScreen
 import app.lawnchair.ui.preferences.navigation.HomeScreenGrid
@@ -43,6 +45,8 @@ internal val settingsSearchEntries = listOf(
     SettingsSearchEntry("notification_dots", null, "General", "general_label", true),
     SettingsSearchEntry("show_notification_count", null, "General", "general_label", false),
     SettingsSearchEntry("color_style_label", null, "General", "general_label", false),
+    SettingsSearchEntry("theme_label", null, "General", "general_label", false),
+    SettingsSearchEntry("get_more_icon_packs", null, "GeneralIconPack", "icon_pack", false),
     SettingsSearchEntry("settings", null, "GeneralThemedIcons", "themed_icon_title", true),
     SettingsSearchEntry("fallback_icon_source_title", null, "GeneralThemedIcons", "themed_icon_title", false),
     SettingsSearchEntry("enforce_themed_icons_title", "enforce_themed_icons_description", "GeneralThemedIcons", "themed_icon_title", false),
@@ -96,6 +100,9 @@ internal val settingsSearchEntries = listOf(
     SettingsSearchEntry("widget_unlimited_size_label", "widget_unlimited_size_description", "HomeScreen", "home_screen_label", false),
     SettingsSearchEntry("force_widget_resize_label", "force_widget_resize_description", "HomeScreen", "home_screen_label", false),
     SettingsSearchEntry("widget_padding_label", null, "HomeScreen", "home_screen_label", false),
+    SettingsSearchEntry("feed_provider", null, "HomeScreen", "home_screen_label", false),
+    SettingsSearchEntry("home_screen_text_color", null, "HomeScreen", "home_screen_label", false),
+    SettingsSearchEntry("edit_menu_items", null, "HomeScreen", "home_screen_label", false),
     SettingsSearchEntry("when_folded_label", null, "HomeScreenGrid", "home_screen_grid", true),
     SettingsSearchEntry("columns", null, "HomeScreenGrid", "home_screen_grid", false),
     SettingsSearchEntry("rows", null, "HomeScreenGrid", "home_screen_grid", false),
@@ -107,8 +114,35 @@ internal val settingsSearchEntries = listOf(
     SettingsSearchEntry("hotseat_background", null, "Dock", "dock_label", false),
     SettingsSearchEntry("icons", null, "Dock", "dock_label", true),
     SettingsSearchEntry("show_labels", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("grid", null, "Dock", "dock_label", true),
+    SettingsSearchEntry("state_folded", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("state_unfolded", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("dock_icons", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("dock_rows", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("dock_pages", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("hotseat_bottom_space_label", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("page_indicator_height", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("preview_label", null, "Dock", "dock_label", true),
+    SettingsSearchEntry("hotseat_bg_corner_radius", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("hotseat_bg_alpha", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("hotseat_bg_horizontal_inset_left", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("hotseat_bg_horizontal_inset_right", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("hotseat_bg_vertical_inset_top", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("hotseat_bg_vertical_inset_bottom", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("search_bar_settings", null, "Dock", "dock_label", false),
+    SettingsSearchEntry("search_bar_label", null, "Dock", "dock_label", true),
     SettingsSearchEntry("smartspace_widget_toggle_label", "smartspace_widget_toggle_description", "Smartspace", "smartspace_widget", false),
     SettingsSearchEntry("what_to_show", null, "Smartspace", "smartspace_widget", true),
+    SettingsSearchEntry("smartspace_date_and_time", null, "Smartspace", "smartspace_widget", true),
+    SettingsSearchEntry("smartspace_date", null, "Smartspace", "smartspace_widget", false),
+    SettingsSearchEntry("smartspace_time", null, "Smartspace", "smartspace_widget", false),
+    SettingsSearchEntry("smartspace_calendar", null, "Smartspace", "smartspace_widget", false),
+    SettingsSearchEntry("smartspace_time_format", null, "Smartspace", "smartspace_widget", false),
+    SettingsSearchEntry("preview_label", null, "Smartspace", "smartspace_widget", true),
+    SettingsSearchEntry("smartspace_mode_label", null, "Smartspace", "smartspace_widget", false),
+    SettingsSearchEntry("smartspacer_settings", null, "Smartspace", "smartspace_widget", true),
+    SettingsSearchEntry("maximum_number_of_targets", null, "Smartspace", "smartspace_widget", false),
+    SettingsSearchEntry("open_smartspacer_settings", null, "Smartspace", "smartspace_widget", false),
     SettingsSearchEntry("general_label", null, "AppDrawer", "app_drawer_label", true),
     SettingsSearchEntry("hidden_apps_label", null, "AppDrawer", "app_drawer_label", false),
     SettingsSearchEntry("suggestion_pref_screen_title", null, "AppDrawer", "app_drawer_label", false),
@@ -132,6 +166,36 @@ internal val settingsSearchEntries = listOf(
     SettingsSearchEntry("pref_all_apps_remember_position_title", "pref_all_apps_remember_position_description", "AppDrawer", "app_drawer_label", false),
     SettingsSearchEntry("pref_all_apps_show_scrollbar_title", null, "AppDrawer", "app_drawer_label", false),
     SettingsSearchEntry("layout", null, "AppDrawer", "app_drawer_label", false),
+    SettingsSearchEntry("app_drawer_folder", null, "AppDrawer", "app_drawer_label", false),
+    SettingsSearchEntry("app_drawer_haptic_feedback_label", null, "AppDrawer", "app_drawer_label", false),
+    SettingsSearchEntry("search_bar_settings", null, "AppDrawer", "app_drawer_label", false),
+    SettingsSearchEntry("search_bar_label", null, "AppDrawer", "app_drawer_label", true),
+    SettingsSearchEntry("search_bar_settings", null, "Search", "search_bar_label", true),
+    SettingsSearchEntry("search_provider", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("style", null, "Search", "search_bar_label", true),
+    SettingsSearchEntry("apply_accent_color_label", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("corner_radius_label", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("qsb_hotseat_background_transparency", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("qsb_hotseat_stroke_width", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("preview_label", null, "Search", "search_bar_label", true),
+    SettingsSearchEntry("hotseat_mode_label", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("show_app_search_bar", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("general_label", null, "Search", "search_bar_label", true),
+    SettingsSearchEntry("pref_search_auto_show_keyboard", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("allapps_match_qsb_style_label", "allapps_match_qsb_style_description", "Search", "search_bar_label", false),
+    SettingsSearchEntry("show_search_result_types", null, "Search", "search_bar_label", true),
+    SettingsSearchEntry("search_pref_result_apps_and_shortcuts_title", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("search_pref_result_shortcuts_title", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("search_pref_result_people_title", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("search_pref_result_tips_title", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("search_pref_result_settings_title", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("app_search_algorithm", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("search_pref_result_web_title", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("search_pref_result_files_title", "search_pref_result_files_description", "Search", "search_bar_label", false),
+    SettingsSearchEntry("search_pref_result_launcher_settings_title", "search_pref_result_launcher_settings_description", "Search", "search_bar_label", false),
+    SettingsSearchEntry("search_pref_result_history_title", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("all_apps_search_result_calculator", null, "Search", "search_bar_label", false),
+    SettingsSearchEntry("show_hidden_apps_in_search_results", null, "Search", "search_bar_label", false),
     SettingsSearchEntry("general_label", null, "Folders", "folders_label", true),
     SettingsSearchEntry("folder_shape_label", null, "Folders", "folders_label", false),
     SettingsSearchEntry("folder_preview_bg_opacity_label", null, "Folders", "folders_label", false),
@@ -142,6 +206,7 @@ internal val settingsSearchEntries = listOf(
     SettingsSearchEntry("icons", null, "Folders", "folders_label", true),
     SettingsSearchEntry("show_labels", null, "Folders", "folders_label", false),
     SettingsSearchEntry("label_size", null, "Folders", "folders_label", false),
+    SettingsSearchEntry("gesture_overview_label", null, "Gestures", "gestures_label", false),
     SettingsSearchEntry("gesture_double_tap", null, "Gestures", "gestures_label", false),
     SettingsSearchEntry("gesture_swipe_up", null, "Gestures", "gestures_label", false),
     SettingsSearchEntry("gesture_swipe_down", null, "Gestures", "gestures_label", false),
@@ -165,11 +230,19 @@ internal val settingsSearchEntries = listOf(
     SettingsSearchEntry("create_backup", null, "BackupAndRestore", "backup_and_restore_label", false),
     SettingsSearchEntry("restore_backup", null, "BackupAndRestore", "backup_and_restore_label", false),
     SettingsSearchEntry("restore_nova_backup", null, "BackupAndRestore", "backup_and_restore_label", false),
+    SettingsSearchEntry("auto_backup_label", null, "BackupAndRestore", "backup_and_restore_label", true),
+    SettingsSearchEntry("auto_backup_folder", null, "BackupAndRestore", "backup_and_restore_label", false),
+    SettingsSearchEntry("auto_backup_interval", null, "BackupAndRestore", "backup_and_restore_label", false),
+    SettingsSearchEntry("auto_backup_keep", null, "BackupAndRestore", "backup_and_restore_label", false),
+    SettingsSearchEntry("auto_backup_now", null, "BackupAndRestore", "backup_and_restore_label", false),
     SettingsSearchEntry("product", null, "About", "about_label", true),
     SettingsSearchEntry("support_and_pr", null, "About", "about_label", true),
     SettingsSearchEntry("community", null, "About", "about_label", true),
     SettingsSearchEntry("acknowledgements", null, "About", "about_label", false),
     SettingsSearchEntry("privacy_policy", null, "About", "about_label", false),
+    SettingsSearchEntry("gesture_overview_app", null, "GestureOverview", "gesture_overview_label", true),
+    SettingsSearchEntry("gesture_overview_orphans", null, "GestureOverview", "gesture_overview_label", true),
+    SettingsSearchEntry("gesture_overview_remove_orphans", null, "GestureOverview", "gesture_overview_label", false),
     SettingsSearchEntry("workspace_label", null, "ExperimentalFeatures", "experimental_features_label", true),
     SettingsSearchEntry("font_picker_label", "font_picker_description", "ExperimentalFeatures", "experimental_features_label", false),
     SettingsSearchEntry("workspace_increase_max_grid_size_label", "workspace_increase_max_grid_size_description", "ExperimentalFeatures", "experimental_features_label", false),
@@ -208,8 +281,10 @@ internal fun settingsSearchRoute(screen: String): PreferenceRoute? = when (scree
     "General" -> General
     "GeneralAdvancedIcons" -> GeneralAdvancedIcons
     "GeneralCustomIconShapeCreator" -> GeneralCustomIconShapeCreator()
+    "GeneralIconPack" -> GeneralIconPack
     "GeneralIconShape" -> GeneralIconShape()
     "GeneralThemedIcons" -> GeneralThemedIcons
+    "GestureOverview" -> GestureOverview
     "Gestures" -> Gestures
     "HomeScreen" -> HomeScreen
     "HomeScreenGrid" -> HomeScreenGrid

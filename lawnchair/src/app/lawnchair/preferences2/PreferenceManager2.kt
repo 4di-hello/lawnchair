@@ -388,6 +388,33 @@ class PreferenceManager2 @Inject constructor(
         defaultValue = context.resources.getBoolean(R.bool.config_default_show_top_shadow),
     )
 
+    // Fork: automatic backups into a folder picked by the user (see AutoBackup).
+    val autoBackupEnabled = preference(
+        key = booleanPreferencesKey(name = "auto_backup_enabled"),
+        defaultValue = false,
+    )
+
+    val autoBackupFolder = preference(
+        key = stringPreferencesKey(name = "auto_backup_folder"),
+        defaultValue = "",
+    )
+
+    val autoBackupIntervalDays = preference(
+        key = intPreferencesKey(name = "auto_backup_interval_days"),
+        defaultValue = 1,
+    )
+
+    val autoBackupKeep = preference(
+        key = intPreferencesKey(name = "auto_backup_keep"),
+        defaultValue = 5,
+    )
+
+    // Fork: the launcher's own settings among the app drawer search results.
+    val searchResultLauncherSettings = preference(
+        key = booleanPreferencesKey(name = "search_result_launcher_settings"),
+        defaultValue = true,
+    )
+
     // LC: small marks next to home screen icons and folders that have swipe gestures.
     val showGestureIndicator = preference(
         key = booleanPreferencesKey(name = "show_gesture_indicator"),
@@ -1005,6 +1032,34 @@ class PreferenceManager2 @Inject constructor(
         }
     }
 
+    /**
+     * Fork: every swipe gesture stored for an app or a home screen item, for the gesture
+     * overview. App gestures set to "do nothing" are left out, they behave like no gesture.
+     */
+    fun storedIconGestures(): Flow<List<StoredIconGesture>> = preferencesDataStore.data.map { prefs ->
+        prefs.asMap().mapNotNull { (key, value) ->
+            val name = key.name
+            val type = GestureType.entries.firstOrNull { name.endsWith(":${it.name}") } ?: return@mapNotNull null
+            val target = name.removeSuffix(":${type.name}")
+            val config = (value as? String)?.let {
+                runCatching { kotlinxJson.decodeFromString<GestureHandlerConfig>(it) }.getOrNull()
+            } ?: return@mapNotNull null
+            if (target.startsWith("item:")) {
+                val itemId = target.removePrefix("item:").toIntOrNull() ?: return@mapNotNull null
+                StoredIconGesture(name, type, config, appKey = null, itemId = itemId)
+            } else {
+                val appKey = Converters().toComponentKey(target) ?: return@mapNotNull null
+                if (config == GestureHandlerConfig.NoOp) return@mapNotNull null
+                StoredIconGesture(name, type, config, appKey = appKey, itemId = null)
+            }
+        }
+    }
+
+    /** Fork: removes one stored gesture; an item then uses its app's gesture again. */
+    suspend fun removeStoredIconGesture(prefKey: String) {
+        preferencesDataStore.edit { it.remove(stringPreferencesKey(prefKey)) }
+    }
+
     // LC: Custom icon of a home screen folder, keyed by its item id. Stored as JSON so it is
     // part of the preferences backup.
     private fun folderIconKey(itemId: Int) = stringPreferencesKey("folder_icon:$itemId")
@@ -1071,3 +1126,12 @@ class PreferenceManager2 @Inject constructor(
 
 @Composable
 fun preferenceManager2() = PreferenceManager2.getInstance(LocalContext.current)
+
+/** Fork: one swipe gesture stored for an app ([appKey]) or a home screen item ([itemId]). */
+data class StoredIconGesture(
+    val prefKey: String,
+    val type: GestureType,
+    val config: GestureHandlerConfig,
+    val appKey: ComponentKey?,
+    val itemId: Int?,
+)

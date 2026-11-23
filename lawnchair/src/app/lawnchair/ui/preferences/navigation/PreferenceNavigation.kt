@@ -38,6 +38,7 @@ import app.lawnchair.ui.preferences.destinations.FeatureFlagsPreference
 import app.lawnchair.ui.preferences.destinations.FolderPreferences
 import app.lawnchair.ui.preferences.destinations.FontSelection
 import app.lawnchair.ui.preferences.destinations.GeneralPreferences
+import app.lawnchair.ui.preferences.destinations.GestureOverviewPreferences
 import app.lawnchair.ui.preferences.destinations.GesturePreferences
 import app.lawnchair.ui.preferences.destinations.HiddenAppsPreferences
 import app.lawnchair.ui.preferences.destinations.HomeScreenGridPreferences
@@ -227,6 +228,7 @@ fun PreferenceNavigation(
             SelectIconPreference(key)
         }
         composable<SettingsSearch> { SettingsSearchScreen() }
+        composable<GestureOverview> { GestureOverviewPreferences() }
         composable<SelectFolderIcon> { backStackEntry ->
             val args: SelectFolderIcon = backStackEntry.toRoute()
             SelectFolderIconPreference(itemId = args.itemId, title = args.title)

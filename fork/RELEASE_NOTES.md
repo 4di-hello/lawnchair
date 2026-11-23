@@ -1,6 +1,9 @@
 **TL;DR:** Christians Lawnchair-Fork, Stand 23.11.2026. Gesten auf App-Symbolen funktionieren jetzt in alle vier Richtungen, auch auf Ordnern und pro Element. Sie können auch Verknüpfungen öffnen, etwa einen bestimmten Chat. Ins Internet geht der Launcher nur noch für Updates.
 
 ## Neu in diesem Stand
+- **Automatische Sicherung:** Einstellungen → Sichern und Wiederherstellen. Ordner wählen, Abstand und Anzahl einstellen.
+- **Gesten auf Symbolen:** Übersicht aller Wischgesten unter Einstellungen → Gesten, zum Ändern und Löschen.
+- **Launcher-Einstellungen in der App-Suche:** z. B. „Symbolgröße“ in der App-Übersicht eintippen.
 - **Suche in den Einstellungen:** Lupe oben im Einstellungsmenü. Ein Treffer öffnet die Seite und hebt die Einstellung kurz hervor.
 - **Wisch-Hinweis:** Kleine Striche neben Symbolen und Ordnern zeigen, in welche Richtung eine Geste liegt. Abschaltbar unter Startbildschirm → Symbole.
 - **Ordner:** Lange drücken bietet jetzt „Umbenennen“ und „Symbol ändern“ (Symbol aus einem Icon-Pack).

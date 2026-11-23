@@ -39,7 +39,7 @@ internal data class SettingsSearchEntry(
     val isHeading: Boolean,
 )
 
-private data class SettingsSearchResult(
+internal data class SettingsSearchResult(
     val entry: SettingsSearchEntry,
     val label: String,
     val description: String?,
@@ -51,7 +51,7 @@ private data class SettingsSearchResult(
  * label of the preferences on the opened screen.
  */
 object SettingsSearchHighlight {
-    private const val MAX_AGE_MS = 3000L
+    private const val MAX_AGE_MS = 5000L
 
     var target by mutableStateOf<String?>(null)
         private set
@@ -102,23 +102,49 @@ fun rememberSearchHighlight(label: String?): Modifier {
         }
 }
 
-@SuppressLint("DiscouragedApi")
-private fun Context.stringByName(name: String?): String? {
-    if (name == null) return null
-    val id = resources.getIdentifier(name, "string", packageName)
-    return if (id == 0) null else getString(id)
-}
+/** Fork: the searchable settings with their texts in the current language. */
+internal object SettingsSearchCatalog {
 
-private fun loadResults(context: Context): List<SettingsSearchResult> = settingsSearchEntries.mapNotNull { entry ->
-    val label = context.stringByName(entry.label) ?: return@mapNotNull null
-    val title = context.stringByName(entry.screenTitle)
-    SettingsSearchResult(
-        entry = entry,
-        label = label,
-        description = context.stringByName(entry.description),
-        path = if (title == null || title == label) "" else title,
-    )
-}.distinctBy { it.label to it.path }
+    private var cache: Pair<String, List<SettingsSearchResult>>? = null
+
+    @Synchronized
+    fun all(context: Context): List<SettingsSearchResult> {
+        val locale = context.resources.configuration.locales[0].toLanguageTag()
+        cache?.let { (cachedLocale, results) -> if (cachedLocale == locale) return results }
+        return load(context).also { cache = locale to it }
+    }
+
+    /** Settings matching [query]: matches in the name first, then in the description or screen. */
+    fun search(context: Context, query: String): List<SettingsSearchResult> {
+        val search = query.trim()
+        if (search.isEmpty()) return emptyList()
+        val all = all(context)
+        val byLabel = all.filter { it.label.contains(search, ignoreCase = true) }
+        val other = all.filter {
+            it !in byLabel &&
+                (it.description?.contains(search, ignoreCase = true) == true || it.path.contains(search, ignoreCase = true))
+        }
+        return byLabel + other
+    }
+
+    @SuppressLint("DiscouragedApi")
+    private fun Context.stringByName(name: String?): String? {
+        if (name == null) return null
+        val id = resources.getIdentifier(name, "string", packageName)
+        return if (id == 0) null else getString(id)
+    }
+
+    private fun load(context: Context): List<SettingsSearchResult> = settingsSearchEntries.mapNotNull { entry ->
+        val label = context.stringByName(entry.label) ?: return@mapNotNull null
+        val title = context.stringByName(entry.screenTitle)
+        SettingsSearchResult(
+            entry = entry,
+            label = label,
+            description = context.stringByName(entry.description),
+            path = if (title == null || title == label) "" else title,
+        )
+    }.distinctBy { it.label to it.path }
+}
 
 /** Fork: searches all settings by name and description; a result opens its screen. */
 @Composable
@@ -129,21 +155,8 @@ fun SettingsSearchScreen(
     val navController = LocalNavController.current
     val msdlPlayer = MSDLPlayerWrapper.INSTANCE.get(context)
     var query by rememberSaveable { mutableStateOf("") }
-    val all = remember { loadResults(context) }
     val search = query.trim()
-    val results = remember(search) {
-        if (search.isEmpty()) {
-            emptyList()
-        } else {
-            // Matches in the name first, then matches in the description or the screen.
-            val byLabel = all.filter { it.label.contains(search, ignoreCase = true) }
-            val other = all.filter {
-                it !in byLabel &&
-                    (it.description?.contains(search, ignoreCase = true) == true || it.path.contains(search, ignoreCase = true))
-            }
-            byLabel + other
-        }
-    }
+    val results = remember(search) { SettingsSearchCatalog.search(context, search) }
 
     PreferenceSearchScaffold(
         value = query,

@@ -8,9 +8,11 @@ import app.lawnchair.preferences.getAdapter
 import app.lawnchair.preferences2.preferenceManager2
 import app.lawnchair.ui.preferences.LocalIsExpandedScreen
 import app.lawnchair.ui.preferences.components.GestureHandlerPreference
+import app.lawnchair.ui.preferences.components.NavigationActionPreference
 import app.lawnchair.ui.preferences.components.controls.ListPreference
 import app.lawnchair.ui.preferences.components.layout.PreferenceGroup
 import app.lawnchair.ui.preferences.components.layout.PreferenceLayout
+import app.lawnchair.ui.preferences.navigation.GestureOverview
 import com.android.launcher3.R
 
 @Composable
@@ -23,6 +25,14 @@ fun GesturePreferences(
         backArrowVisible = !LocalIsExpandedScreen.current,
         modifier = modifier,
     ) {
+        // Fork: overview of the gestures on apps, icons and folders.
+        PreferenceGroup {
+            NavigationActionPreference(
+                label = stringResource(id = R.string.gesture_overview_label),
+                subtitle = stringResource(id = R.string.gesture_overview_description),
+                destination = GestureOverview,
+            )
+        }
         PreferenceGroup {
             GestureHandlerPreference(
                 adapter = prefs.doubleTapGestureHandler.getAdapter(),
