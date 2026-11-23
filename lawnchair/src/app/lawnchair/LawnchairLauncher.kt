@@ -41,6 +41,7 @@ import app.lawnchair.gestures.VerticalSwipeTouchController
 import app.lawnchair.gestures.config.GestureHandlerConfig
 import app.lawnchair.gestures.ui.LawnchairShortcutActivity
 import app.lawnchair.nexuslauncher.OverlayCallbackImpl
+import app.lawnchair.override.ShortcutOverrides
 import app.lawnchair.preferences.PreferenceManager
 import app.lawnchair.preferences2.PreferenceManager2
 import app.lawnchair.preferences2.firstCached
@@ -66,6 +67,7 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.folder.FolderIcon
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.model.data.PredictedContainerInfo
+import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.shortcuts.DeepShortcutView
 import com.android.launcher3.statemanager.StateManager
@@ -174,8 +176,12 @@ class LawnchairLauncher : QuickstepLauncher() {
         preferenceManager2.preferencesDataStore.data.drop(1).onEach {
             preferenceManager2.withFreshCache {
                 if (!isDestroyed) {
-                    workspace.mapOverItems { _, view ->
-                        view.invalidate()
+                    workspace.mapOverItems { info, view ->
+                        refreshHomeItem(info, view)
+                        (view as? FolderIcon)?.folder?.mapOverItems { folderInfo, folderView ->
+                            refreshHomeItem(folderInfo, folderView)
+                            false
+                        }
                         false
                     }
                 }
@@ -506,6 +512,14 @@ class LawnchairLauncher : QuickstepLauncher() {
                 }
             },
         )
+    }
+
+    // LC: redraws an item; pinned shortcuts are bound again for a changed name or icon.
+    private fun refreshHomeItem(info: ItemInfo?, view: View) {
+        if (view is BubbleTextView && info is WorkspaceItemInfo && ShortcutOverrides.isCustomizable(info)) {
+            view.applyFromWorkspaceItem(info)
+        }
+        view.invalidate()
     }
 
     override fun onStop() {

@@ -24,6 +24,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp
 import app.lawnchair.LawnchairLauncher
 import app.lawnchair.override.CustomizeAppDialog
+import app.lawnchair.override.CustomizeShortcutDialog
+import app.lawnchair.override.ShortcutOverrides
 import app.lawnchair.preferences2.PreferenceManager2
 import app.lawnchair.preferences2.firstCached
 import app.lawnchair.ui.preferences.PreferenceActivity
@@ -42,6 +44,7 @@ import com.android.launcher3.icons.LauncherIcons
 import com.android.launcher3.logging.StatsLogManager
 import com.android.launcher3.model.data.AppInfo as ModelAppInfo
 import com.android.launcher3.model.data.ItemInfo
+import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ApplicationInfoWrapper
 import com.android.launcher3.util.ComponentKey
@@ -96,6 +99,9 @@ class LawnchairShortcut {
                 val prefs2 = PreferenceManager2.getInstance(activity)
                 if (prefs2.lockHomeScreen.firstCached()) {
                     null
+                } else if (itemInfo is WorkspaceItemInfo && ShortcutOverrides.isCustomizable(itemInfo)) {
+                    // LC: pinned shortcuts (e.g. a chat) get a name, an icon and gestures too
+                    CustomizeShortcut(activity, itemInfo, originalView)
                 } else {
                     getAppInfo(activity, itemInfo)?.let { Customize(activity, it, itemInfo, originalView) }
                 }
@@ -242,6 +248,29 @@ class LawnchairShortcut {
             } else {
                 Toast.makeText(launcher, R.string.activity_not_found, Toast.LENGTH_SHORT).show()
                 AbstractFloatingView.closeAllOpenViews(launcher)
+            }
+        }
+    }
+
+    /** LC: name, icon and gestures of a pinned shortcut on the home screen. */
+    class CustomizeShortcut(
+        private val launcher: LawnchairLauncher,
+        private val shortcut: WorkspaceItemInfo,
+        originalView: View,
+    ) : SystemShortcut<LawnchairLauncher>(R.drawable.ic_edit, R.string.action_customize, launcher, shortcut, originalView) {
+
+        override fun onClick(v: View) {
+            AbstractFloatingView.closeAllOpenViews(launcher)
+            val icon = shortcut.newIcon(launcher)
+            ComposeBottomSheet.show(
+                context = launcher,
+                contentPaddings = PaddingValues(bottom = 64.dp),
+            ) {
+                CustomizeShortcutDialog(
+                    icon = icon,
+                    defaultTitle = ShortcutOverrides.originalTitle(shortcut),
+                    itemId = shortcut.id,
+                ) { close(true) }
             }
         }
     }

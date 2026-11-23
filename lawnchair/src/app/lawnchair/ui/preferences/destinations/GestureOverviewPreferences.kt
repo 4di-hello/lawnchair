@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.lawnchair.preferences2.PreferenceManager2
 import app.lawnchair.preferences2.StoredIconGesture
 import app.lawnchair.preferences2.preferenceManager2
 import app.lawnchair.ui.preferences.LocalIsExpandedScreen
@@ -150,6 +151,7 @@ private fun appLabel(context: Context, key: ComponentKey): String = runCatching 
 
 /** Titles of the home screen items by id, read from the launcher's model. */
 private suspend fun loadHomeItems(context: Context): Map<Int, HomeItemName> = suspendCancellableCoroutine { continuation ->
+    val prefs = PreferenceManager2.getInstance(context)
     LauncherAppState.getInstance(context).model.loadAsync { dataModel ->
         val result = if (dataModel == null) {
             emptyMap()
@@ -162,7 +164,8 @@ private suspend fun loadHomeItems(context: Context): Map<Int, HomeItemName> = su
                         info.container >= 0 -> R.string.gesture_overview_place_in_folder
                         else -> R.string.gesture_overview_place_home
                     }
-                    info.id to HomeItemName(info.title?.toString().orEmpty(), place)
+                    val title = prefs.getItemTitleCached(info.id) ?: info.title?.toString().orEmpty()
+                    info.id to HomeItemName(title, place)
                 }
             }
         }

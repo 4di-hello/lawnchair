@@ -46,6 +46,7 @@ import app.lawnchair.ui.preferences.components.ItemGesturePreference
 import app.lawnchair.ui.preferences.components.controls.SwitchPreference
 import app.lawnchair.ui.preferences.components.layout.ClickableIcon
 import app.lawnchair.ui.preferences.components.layout.PreferenceGroup
+import app.lawnchair.ui.preferences.navigation.SelectFolderIcon
 import app.lawnchair.ui.preferences.navigation.SelectIcon
 import app.lawnchair.ui.util.addIfNotNull
 import app.lawnchair.util.navigationBarsOrDisplayCutoutPadding
@@ -55,6 +56,7 @@ import com.android.launcher3.R
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.util.ComponentKey
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -228,6 +230,56 @@ fun CustomizeAppDialog(
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+/**
+ * LC: name, icon and gestures of a pinned shortcut on the home screen (e.g. a chat or a
+ * contact). The name is saved when the sheet closes; the icon comes from an icon pack.
+ */
+@Composable
+fun CustomizeShortcutDialog(
+    icon: Drawable,
+    defaultTitle: String,
+    itemId: Int,
+    modifier: Modifier = Modifier,
+    onClose: () -> Unit,
+) {
+    val context = LocalContext.current
+    val prefs2 = preferenceManager2()
+    var title by remember { mutableStateOf(prefs2.getItemTitleCached(itemId) ?: defaultTitle) }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            val newTitle = title.takeIf { it.isNotEmpty() && it != defaultTitle }
+            if (newTitle != prefs2.getItemTitleCached(itemId)) {
+                // The sheet's scope ends with it, so save in the preferences' own scope.
+                MainScope().launch { prefs2.setItemTitle(itemId, newTitle) }
+            }
+        }
+    }
+
+    CustomizeDialog(
+        icon = icon,
+        title = title,
+        onTitleChange = { title = it },
+        defaultTitle = defaultTitle,
+        launchSelectIcon = {
+            context.startActivity(PreferenceActivity.createIntent(context, SelectFolderIcon(itemId, title)))
+            onClose()
+        },
+        modifier = modifier,
+    ) {
+        PreferenceGroup(heading = stringResource(R.string.gestures_label)) {
+            GestureType.entries.forEach { gestureType ->
+                ItemGesturePreference(
+                    itemId = itemId,
+                    fallback = null,
+                    gestureType = gestureType,
+                    label = stringResource(id = gestureType.labelResId),
+                )
             }
         }
     }

@@ -1060,8 +1060,19 @@ class PreferenceManager2 @Inject constructor(
         preferencesDataStore.edit { it.remove(stringPreferencesKey(prefKey)) }
     }
 
-    // LC: Custom icon of a home screen folder, keyed by its item id. Stored as JSON so it is
-    // part of the preferences backup.
+    // Fork: custom name of a pinned shortcut on the home screen (e.g. a chat), keyed by its
+    // item id. Kept apart from the item, so an update of the shortcut does not reset it.
+    private fun itemTitleKey(itemId: Int) = stringPreferencesKey("item_title:$itemId")
+
+    suspend fun setItemTitle(itemId: Int, title: String?) {
+        val key = itemTitleKey(itemId)
+        preferencesDataStore.edit { prefs -> if (title.isNullOrEmpty()) prefs.remove(key) else prefs[key] = title }
+    }
+
+    fun getItemTitleCached(itemId: Int): String? = getCachedPreferences()[itemTitleKey(itemId)]
+
+    // LC: Custom icon of a home screen folder or pinned shortcut, keyed by its item id. Stored
+    // as JSON so it is part of the preferences backup.
     private fun folderIconKey(itemId: Int) = stringPreferencesKey("folder_icon:$itemId")
 
     suspend fun setFolderIcon(itemId: Int, icon: FolderIconOverride?) {

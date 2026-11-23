@@ -116,6 +116,7 @@ import app.lawnchair.font.FontManager;
 import app.lawnchair.gestures.GestureIndicator;
 import app.lawnchair.gestures.IconGestureListener;
 import app.lawnchair.gestures.IconSwipeGestureTarget;
+import app.lawnchair.override.ShortcutOverrides;
 import app.lawnchair.preferences.PreferenceManager;
 import app.lawnchair.preferences2.PreferenceManager2;
 import app.lawnchair.util.LawnchairUtilsKt;
@@ -422,6 +423,8 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
 
     @UiThread
     public void applyFromWorkspaceItem(WorkspaceItemInfo info) {
+        // LC: own name and icon of a pinned shortcut
+        ShortcutOverrides.apply(this, info);
         applyIconAndLabel(info);
         setItemInfo(info);
 
@@ -509,7 +512,11 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         setTag(itemInfo);
         // Lawnchair: Icon swipe gesture feature
         mGestureListener = shouldSupportIconSwipeGestures()
-                ? new IconGestureListener(this, pref2, itemInfo.getComponentKey(), itemInfo.id)
+                // LC: only app icons take over the app's gestures, not pinned shortcuts of it
+                ? new IconGestureListener(this, pref2,
+                        itemInfo.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION
+                                ? itemInfo.getComponentKey() : null,
+                        itemInfo.id)
                 : null;
     }
 
