@@ -172,4 +172,11 @@ jobs:
         run: |
           gh release view "nightly" && gh release delete "nightly" -y --cleanup-tag
           # Fork: tag the built branch, the in-app updater checks it (target_commitish).
-          gh release create "nightly" "./$APK_NAME" -p -t "Lawnchair Nightly" --generate-notes --target "${{ github.ref_name }}"
+          if [ -f fork/RELEASE_NOTES.md ]; then
+            # Fork: German release notes, plus the build this release comes from.
+            { cat fork/RELEASE_NOTES.md; printf '\n---\nBuild %s, Commit %s, %s\n' \
+              "${{ github.run_number }}" "$(echo ${{ github.sha }} | cut -c1-7)" "$(date -u +%Y-%m-%d)"; } > notes.md
+            gh release create "nightly" "./$APK_NAME" -p -t "Lawnchair Nightly" -F notes.md --target "${{ github.ref_name }}"
+          else
+            gh release create "nightly" "./$APK_NAME" -p -t "Lawnchair Nightly" --generate-notes --target "${{ github.ref_name }}"
+          fi
