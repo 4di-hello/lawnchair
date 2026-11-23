@@ -388,6 +388,12 @@ class PreferenceManager2 @Inject constructor(
         defaultValue = context.resources.getBoolean(R.bool.config_default_show_top_shadow),
     )
 
+    // Fork: speed of the launcher's animations, 1 = normal (see AnimationSpeed).
+    val animationSpeed = preference(
+        key = floatPreferencesKey(name = "animation_speed"),
+        defaultValue = 1f,
+    )
+
     // Fork: automatic backups into a folder picked by the user (see AutoBackup).
     val autoBackupEnabled = preference(
         key = booleanPreferencesKey(name = "auto_backup_enabled"),

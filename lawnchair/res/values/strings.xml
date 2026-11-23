@@ -680,6 +680,7 @@
     <string name="pick_shortcut_expand">Show shortcuts</string>
     <string name="pick_shortcut_collapse">Hide shortcuts</string>
     <string name="folder_rename">Rename</string>
+    <string name="animation_speed_label">Animation speed</string>
     <string name="pick_shortcut_create">Create a shortcut</string>
     <string name="pick_shortcut_create_description">Through an app\'s shortcut setup, e.g. a Tasker task</string>
     <string name="pick_shortcut_create_failed">The app did not create a shortcut</string>

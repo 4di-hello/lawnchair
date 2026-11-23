@@ -27,6 +27,7 @@ import app.lawnchair.ui.preferences.navigation.Smartspace
 
 internal val settingsSearchEntries = listOf(
     SettingsSearchEntry("home_screen_rotation_label", "home_screen_rotation_description", "General", "general_label", false),
+    SettingsSearchEntry("animation_speed_label", null, "General", "general_label", false),
     SettingsSearchEntry("updater", null, "General", "general_label", true),
     SettingsSearchEntry("auto_updater_label", "auto_updater_description", "General", "general_label", false),
     SettingsSearchEntry("live_information_label", "live_information_description", "General", "general_label", false),

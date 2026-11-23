@@ -50,6 +50,7 @@ import app.lawnchair.root.RootNotAvailableException
 import app.lawnchair.theme.ThemeProvider
 import app.lawnchair.ui.popup.LauncherOptionsPopup
 import app.lawnchair.ui.popup.LawnchairShortcut
+import app.lawnchair.util.AnimationSpeed
 import app.lawnchair.util.getThemedIconPacksInstalled
 import app.lawnchair.util.unsafeLazy
 import app.lawnchair.views.LawnchairFloatingSurfaceView
@@ -175,6 +176,7 @@ class LawnchairLauncher : QuickstepLauncher() {
         // folder icon change, once the preference cache has the new values.
         preferenceManager2.preferencesDataStore.data.drop(1).onEach {
             preferenceManager2.withFreshCache {
+                AnimationSpeed.apply(this)
                 if (!isDestroyed) {
                     workspace.mapOverItems { info, view ->
                         refreshHomeItem(info, view)
@@ -491,6 +493,8 @@ class LawnchairLauncher : QuickstepLauncher() {
 
     override fun onResume() {
         super.onResume()
+        // Fork: Android resets the animation scale when its own setting changes.
+        AnimationSpeed.apply(this)
         restartIfPending()
         refreshPredictionContainersFromModel()
 

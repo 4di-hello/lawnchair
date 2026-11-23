@@ -40,6 +40,7 @@ import app.lawnchair.ui.preferences.components.colorpreference.ColorContrastWarn
 import app.lawnchair.ui.preferences.components.colorpreference.ColorPreference
 import app.lawnchair.ui.preferences.components.controls.ListPreference
 import app.lawnchair.ui.preferences.components.controls.ListPreferenceEntry
+import app.lawnchair.ui.preferences.components.controls.SliderPreference
 import app.lawnchair.ui.preferences.components.controls.SwitchPreference
 import app.lawnchair.ui.preferences.components.controls.WarningPreference
 import app.lawnchair.ui.preferences.components.layout.ExpandAndShrink
@@ -91,6 +92,16 @@ fun GeneralPreferences(modifier: Modifier = Modifier) {
                 adapter = prefs.allowRotation.getAdapter(),
                 label = stringResource(id = R.string.home_screen_rotation_label),
                 description = stringResource(id = R.string.home_screen_rotation_description),
+            )
+        }
+        // Fork: speed of the launcher's animations
+        PreferenceGroup {
+            SliderPreference(
+                label = stringResource(id = R.string.animation_speed_label),
+                adapter = prefs2.animationSpeed.getAdapter(),
+                step = 0.25f,
+                valueRange = 0.5f..3f,
+                showAsPercentage = true,
             )
         }
         PreferenceGroup(heading = stringResource(id = R.string.updater)) {
