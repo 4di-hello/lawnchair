@@ -6,8 +6,11 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
+import app.lawnchair.LawnchairProto
 import app.lawnchair.LawnchairProto.BackupInfo
+import app.lawnchair.data.AppDatabase
 import app.lawnchair.util.hasFlag
 import app.lawnchair.util.scaleDownTo
 import app.lawnchair.util.scaleDownToDisplaySize
@@ -81,12 +84,23 @@ class LawnchairBackup(
         readZip(handlers)
         // Written after the zip has been extracted: the backed up preferences file is one of
         // the restored entries, so writing the grid state first would let it be overwritten.
-        DeviceGridState(info.gridState).writeToPrefs(context, true)
+        // Fork: written into the restored file itself. Going through the SharedPreferences
+        // instance would write its in-memory values, from before the restore, back to disk.
+        writeGridState(context, info.gridState)
 
         val dbController = ModelDbController(context)
         RestoreDbTask.performRestore(context, dbController)
         // Fork: offer to set up the restored widgets one after another.
         WidgetSetupAfterRestore.markRestored(context)
+    }
+
+    private fun writeGridState(context: Context, gridState: LawnchairProto.GridState) {
+        val file = prefsFile(context)
+        val prefs = SharedPrefsFile.read(file)
+        prefs[DeviceGridState.KEY_WORKSPACE_SIZE] = gridState.gridSize
+        prefs[DeviceGridState.KEY_HOTSEAT_COUNT] = gridState.hotseatCount
+        prefs[DeviceGridState.KEY_DEVICE_TYPE] = gridState.deviceType
+        SharedPrefsFile.write(file, prefs)
     }
 
     private suspend fun readZip(handlers: Map<String, suspend (InputStream) -> Unit>) {
@@ -108,6 +122,7 @@ class LawnchairBackup(
     }
 
     companion object {
+        private const val TAG = "LawnchairBackup"
         private const val BACKUP_VERSION = 1
         private const val PREFS_FILE_NAME = "${LauncherFiles.SHARED_PREFERENCES_KEY}.xml"
         private const val PREFS_DB_FILE_NAME = "preferences"
@@ -164,6 +179,9 @@ class LawnchairBackup(
 
             val pfd = context.contentResolver.openFileDescriptor(fileUri, "w")!!
             withContext(Dispatchers.IO) {
+                // Fork: recent changes can still sit in the databases' write-ahead logs, which
+                // are not part of the backup. Move them into the database files first.
+                checkpointDatabases(context)
                 pfd.use {
                     ZipOutputStream(FileOutputStream(pfd.fileDescriptor).buffered()).use { out ->
                         out.putNextEntry(ZipEntry(INFO_FILE_NAME))
@@ -190,6 +208,15 @@ class LawnchairBackup(
                     }
                 }
             }
+        }
+
+        private fun checkpointDatabases(context: Context) {
+            runCatching { AppDatabase.INSTANCE.get(context).checkpointSync() }
+                .onFailure { Log.w(TAG, "Could not checkpoint the preferences database", it) }
+            runCatching {
+                LauncherAppState.getInstance(context).model.modelDbController.db
+                    .rawQuery("PRAGMA wal_checkpoint(FULL)", null).use { it.moveToFirst() }
+            }.onFailure { Log.w(TAG, "Could not checkpoint the launcher database", it) }
         }
 
         private fun launcherDbFile(context: Context, forRestore: Boolean): File {

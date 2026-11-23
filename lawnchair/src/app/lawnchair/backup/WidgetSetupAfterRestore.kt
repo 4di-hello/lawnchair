@@ -21,7 +21,8 @@ object WidgetSetupAfterRestore {
 
     fun markRestored(context: Context) {
         offeredWidgetIds.clear()
-        prefs(context).edit { putBoolean(KEY_PENDING, true) }
+        // Written synchronously: the launcher process is killed right after the restore.
+        prefs(context).edit(commit = true) { putBoolean(KEY_PENDING, true) }
     }
 
     fun onResume(launcher: Launcher) {
