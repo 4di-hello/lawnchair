@@ -59,6 +59,7 @@ import app.lawnchair.ui.preferences.destinations.SmartspacePreferences
 import app.lawnchair.ui.preferences.destinations.icons.AdvancedIconPreferences
 import app.lawnchair.ui.preferences.destinations.icons.IconPackPreferences
 import app.lawnchair.ui.preferences.destinations.icons.ThemedIconsPreferences
+import app.lawnchair.ui.preferences.search.SettingsSearchScreen
 import com.android.launcher3.util.ComponentKey
 import soup.compose.material.motion.animation.materialSharedAxisXIn
 import soup.compose.material.motion.animation.materialSharedAxisXOut
@@ -225,6 +226,7 @@ fun PreferenceNavigation(
             val key = ComponentKey.fromString(componentKey)!!
             SelectIconPreference(key)
         }
+        composable<SettingsSearch> { SettingsSearchScreen() }
         composable<SelectFolderIcon> { backStackEntry ->
             val args: SelectFolderIcon = backStackEntry.toRoute()
             SelectFolderIconPreference(itemId = args.itemId, title = args.title)

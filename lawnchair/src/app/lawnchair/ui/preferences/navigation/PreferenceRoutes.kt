@@ -210,6 +210,10 @@ data class SelectIcon(
     val componentKey: String,
 ) : PreferenceRoute
 
+// Fork: search in all settings
+@Serializable
+data object SettingsSearch : PreferenceRootRoute
+
 // LC: icon of a home screen folder
 @Serializable
 data class SelectFolderIcon(

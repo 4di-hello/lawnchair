@@ -680,6 +680,8 @@
     <string name="pick_shortcut_expand">Show shortcuts</string>
     <string name="pick_shortcut_collapse">Hide shortcuts</string>
     <string name="folder_rename">Rename</string>
+    <string name="settings_search_hint">Search settings</string>
+    <string name="settings_search_no_results">No matching settings</string>
     <string name="pick_shortcut_search">Search apps and shortcuts</string>
     <string name="pick_shortcut_no_results">No matching shortcuts</string>
     <string name="folder_change_icon">Change icon</string>

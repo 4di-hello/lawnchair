@@ -42,6 +42,11 @@ jobs:
             exit 1
           fi
           if [ "$(git rev-parse HEAD)" != "$before" ]; then
+            # Fork: index new or changed settings for the settings search.
+            python3 fork/tools/gen_settings_index.py
+            if ! git diff --quiet; then
+              git commit -am "Fork: update settings search index"
+            fi
             git push origin gesten-dev
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else

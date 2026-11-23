@@ -37,6 +37,7 @@ import app.lawnchair.preferences2.preferenceManager2
 import app.lawnchair.ui.ModalBottomSheetContent
 import app.lawnchair.ui.preferences.components.layout.PreferenceDivider
 import app.lawnchair.ui.preferences.components.layout.PreferenceTemplate
+import app.lawnchair.ui.preferences.search.rememberSearchHighlight
 import app.lawnchair.ui.util.LocalBottomSheetHandler
 import com.android.launcher3.R
 import com.android.launcher3.util.ComponentKey
@@ -75,7 +76,7 @@ fun GestureHandlerPreference(
 
     PreferenceTemplate(
         title = { Text(text = label) },
-        modifier = modifier,
+        modifier = modifier.then(rememberSearchHighlight(label)),
         description = { Text(text = currentConfig.getLabel(context)) },
         onClick = {
             mMSDLPlayerWrapper.playToken(MSDLToken.TAP_MEDIUM_EMPHASIS)
@@ -225,7 +226,7 @@ private fun GestureTargetPreference(
                 },
             )
         },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.then(rememberSearchHighlight(label)).fillMaxWidth(),
         onClick = {
             mMSDLPlayerWrapper.playToken(MSDLToken.TAP_MEDIUM_EMPHASIS)
             val intent = Intent(context, LawnchairShortcutActivity::class.java).apply {

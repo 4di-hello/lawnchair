@@ -550,6 +550,8 @@
     <string name="pick_shortcut_expand">Verknüpfungen anzeigen</string>
     <string name="pick_shortcut_collapse">Verknüpfungen ausblenden</string>
     <string name="folder_rename">Umbenennen</string>
+    <string name="settings_search_hint">Einstellungen durchsuchen</string>
+    <string name="settings_search_no_results">Keine passenden Einstellungen</string>
     <string name="pick_shortcut_search">Apps und Verknüpfungen suchen</string>
     <string name="pick_shortcut_no_results">Keine passenden Verknüpfungen</string>
     <string name="folder_change_icon">Symbol ändern</string>
