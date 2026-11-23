@@ -1,7 +1,7 @@
 **TL;DR:** Christians Lawnchair-Fork, Stand 23.11.2026. Gesten auf App-Symbolen funktionieren jetzt in alle vier Richtungen, auch auf Ordnern und pro Element. Sie können auch Verknüpfungen öffnen, etwa einen bestimmten Chat. Ins Internet geht der Launcher nur noch für Updates.
 
 ## Neu in diesem Stand
-- **Verknüpfungen der eigenen App zuerst:** Beim Einrichten einer Geste stehen oben die Verknüpfungen der App, zu der das Symbol gehört, z. B. „Claude: Neuer Chat“. Darunter folgen unter „Allgemein“ die übrigen Aktionen. Verknüpfungen anderer Apps findest Du unter „Verknüpfung einer anderen App öffnen“. Das war ein Vorschlag aus dem Lawnchair-PR #7583.
+- **Verknüpfungen der eigenen App zuerst:** Beim Einrichten einer Geste stehen oben die Verknüpfungen der App, zu der das Symbol gehört, z. B. ein bestimmter Chat in Claude. Darunter folgen unter „Allgemein“ die übrigen Aktionen. Verknüpfungen anderer Apps findest Du unter „Verknüpfung einer anderen App öffnen“. Das war ein Vorschlag aus dem Lawnchair-PR #7583.
 - **Korrekturen aus der Prüfung der Upstream-PRs:**
   - Wischen im Dock trifft das richtige Symbol, auch während das Dock animiert.
   - Verknüpfungen aus dem Arbeitsprofil werden richtig gespeichert und tragen das Arbeitsprofil-Abzeichen.
