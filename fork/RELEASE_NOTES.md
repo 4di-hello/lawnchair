@@ -1,6 +1,8 @@
-**TL;DR:** Christians Lawnchair-Fork, Stand 23.11.2026. Gesten auf App-Symbolen funktionieren jetzt in alle vier Richtungen, auch auf Ordnern und pro Element. Sie können auch Verknüpfungen öffnen, etwa einen bestimmten Chat. Ins Internet geht der Launcher nur noch für Updates.
+**TL;DR:** Christians Lawnchair-Fork, Stand 24.11.2026. Gesten auf App-Symbolen funktionieren jetzt in alle vier Richtungen, auch auf Ordnern und pro Element. Sie können auch Verknüpfungen öffnen, etwa einen bestimmten Chat. Ins Internet geht der Launcher nur noch für Updates.
 
 ## Neu in diesem Stand
+- **Verknüpfung als Gestenziel** wird beim Auswählen sofort angeheftet, damit die App sie nicht vorher zurückziehen kann.
+- **Aktionen als Startbildschirm-Verknüpfung:** App-Verknüpfungen werden dort nicht mehr angeboten, weil sie von dort nicht starten würden.
 - **Ordner-Vorschau** zeigt die ersten vier Apps wie Nova (abschaltbar unter Ordner).
 - **Dock-Gesten nach links und rechts** funktionieren jetzt auch bei einem Dock mit nur einer Seite, statt den Startbildschirm zu blättern.
 - **Dock und Navigationsleiste:** Wird die Navigationsleiste nachträglich eingeblendet (z. B. per Tasker), rückt das Dock jetzt darüber.

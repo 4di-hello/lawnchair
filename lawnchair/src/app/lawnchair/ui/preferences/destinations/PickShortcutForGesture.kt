@@ -112,6 +112,7 @@ fun PickShortcutForGesture(
     }
 
     fun onSelect(entry: AppShortcutEntry) {
+        AppShortcuts.pin(context, entry.target)
         val configString = kotlinxJson.encodeToString(entry.toGestureConfig())
         activity.setResult(Activity.RESULT_OK, Intent().putExtra("config", configString))
         activity.finish()
