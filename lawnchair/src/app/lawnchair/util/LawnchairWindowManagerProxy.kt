@@ -190,7 +190,10 @@ class LawnchairWindowManagerProxy @Inject constructor() : WindowManagerProxy(Uti
         val bottomNav = if (isLargeScreen) {
             0
         } else if (isPortrait) {
-            getDimenByName(systemRes, ResourceUtils.NAVBAR_HEIGHT)
+            // Fork: at least the navigation bar that is actually shown. The system value is for
+            // the navigation mode set in Android; a bar shown later on top of gesture navigation
+            // (e.g. by Tasker or a manufacturer's toggle) is taller and would cover the dock.
+            maxOf(getDimenByName(systemRes, ResourceUtils.NAVBAR_HEIGHT), navInsets.bottom)
         } else if (isGesture) {
             getDimenByName(systemRes, ResourceUtils.NAVBAR_HEIGHT_LANDSCAPE)
         } else {
