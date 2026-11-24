@@ -95,7 +95,6 @@ import com.patrykmichalik.opto.core.onEach
 import dev.kdrag0n.monet.theme.ColorScheme
 import java.util.stream.Stream
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -173,8 +172,9 @@ class LawnchairLauncher : QuickstepLauncher() {
         }.launchIn(scope = lifecycleScope)
         launcher.stateManager.addStateListener(clearSearchStateListener)
         // LC: redraw home screen icons and folders when gestures, the gesture indicator or a
-        // folder icon change, once the preference cache has the new values.
-        preferenceManager2.preferencesDataStore.data.drop(1).onEach {
+        // folder icon change, once the preference cache has the new values. Also on the first
+        // value: icons drawn before the stored gestures were loaded would miss their marks.
+        preferenceManager2.preferencesDataStore.data.onEach {
             preferenceManager2.withFreshCache {
                 AnimationSpeed.apply(this)
                 if (!isDestroyed) {

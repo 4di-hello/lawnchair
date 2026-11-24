@@ -1,6 +1,8 @@
 **TL;DR:** Christians Lawnchair-Fork, Stand 23.11.2026. Gesten auf App-Symbolen funktionieren jetzt in alle vier Richtungen, auch auf Ordnern und pro Element. Sie können auch Verknüpfungen öffnen, etwa einen bestimmten Chat. Ins Internet geht der Launcher nur noch für Updates.
 
 ## Neu in diesem Stand
+- **Wisch-Hinweis** erscheint jetzt auch bei Gesten, die schon vorher eingerichtet oder wiederhergestellt waren.
+- **Tasker-Tasks:** „Task-Verknüpfung“ öffnet jetzt Taskers Auswahl.
 - **Animationsgeschwindigkeit:** Einstellungen → Allgemein, 50 % bis 300 %.
 - **Gesten im Dock** funktionieren jetzt auch nach oben und unten.
 - **Tasker-Tasks und andere selbst erstellte Verknüpfungen** als Gestenziel: Geste → „Verknüpfung einer anderen App öffnen“ → „Verknüpfung erstellen“.
