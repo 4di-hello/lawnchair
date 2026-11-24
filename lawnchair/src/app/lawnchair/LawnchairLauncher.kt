@@ -20,9 +20,14 @@ import android.animation.AnimatorSet
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
+import android.database.ContentObserver
+import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.provider.Settings
 import android.util.Pair
 import android.view.Display
 import android.view.View
@@ -40,6 +45,7 @@ import app.lawnchair.gestures.GestureController
 import app.lawnchair.gestures.VerticalSwipeTouchController
 import app.lawnchair.gestures.config.GestureHandlerConfig
 import app.lawnchair.gestures.ui.LawnchairShortcutActivity
+import app.lawnchair.hotseat.NavBarLift
 import app.lawnchair.nexuslauncher.OverlayCallbackImpl
 import app.lawnchair.override.ShortcutOverrides
 import app.lawnchair.preferences.PreferenceManager
@@ -172,6 +178,12 @@ class LawnchairLauncher : QuickstepLauncher() {
             defaultOverlay.setEnableFeed(enable)
         }.launchIn(scope = lifecycleScope)
         launcher.stateManager.addStateListener(clearSearchStateListener)
+        // LC: Xiaomi's navigation button toggle may not resend the window insets
+        contentResolver.registerContentObserver(
+            Settings.Global.getUriFor(NavBarLift.XIAOMI_SETTING),
+            false,
+            navBarObserver,
+        )
         // LC: redraw home screen icons and folders when gestures, the gesture indicator or a
         // folder icon change, once the preference cache has the new values. Also on the first
         // value: icons drawn before the stored gestures were loaded would miss their marks.
@@ -498,6 +510,8 @@ class LawnchairLauncher : QuickstepLauncher() {
         super.onResume()
         // Fork: Android resets the animation scale when its own setting changes.
         AnimationSpeed.apply(this)
+        // LC: the navigation bar may have been switched while the home screen was hidden.
+        relayoutDockForNavBar()
         restartIfPending()
         refreshPredictionContainersFromModel()
 
@@ -542,7 +556,21 @@ class LawnchairLauncher : QuickstepLauncher() {
         refreshPredictionContainersFromModel()
     }
 
+    // LC: lays the dock out again for the navigation bar now shown (see NavBarLift).
+    private val navBarObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+        override fun onChange(selfChange: Boolean) {
+            // The system switches the bar shortly after the setting changes.
+            hotseat?.postDelayed(::relayoutDockForNavBar, 300)
+        }
+    }
+
+    private fun relayoutDockForNavBar() {
+        if (isDestroyed) return
+        hotseat?.setInsets(Rect(deviceProfile.insets))
+    }
+
     override fun onDestroy() {
+        contentResolver.unregisterContentObserver(navBarObserver)
         super.onDestroy()
         // Only actually closes if required, safe to call if not enabled
         SmartspacerClient.close()

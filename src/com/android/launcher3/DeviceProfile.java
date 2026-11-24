@@ -256,9 +256,6 @@ public class DeviceProfile {
 
     // Insets
     private final Rect mInsets = new Rect();
-    // LC: the bottom inset this profile laid out the dock for. A navigation bar shown later
-    // (e.g. on top of gesture navigation) makes the live inset larger than this.
-    private int mLayoutInsetBottom;
     public final Rect workspacePadding = new Rect();
     // Additional padding added to the widget inside its cellSpace. It is applied outside
     // the widgetView, such that the actual view size is same as the widget size.
@@ -390,7 +387,6 @@ public class DeviceProfile {
         );
 
         mInsets.set(windowBounds.insets);
-        mLayoutInsetBottom = mInsets.bottom;
         this.mDisplayOptionSpec = displayOptionSpec;
 
         // TODO(b/241386436): shouldn't change any launcher behaviour
@@ -1631,14 +1627,6 @@ public class DeviceProfile {
      */
     public Rect getInsets() {
         return mInsets;
-    }
-
-    /**
-     * LC: how much higher the current bottom inset is than the one the dock was laid out for,
-     * e.g. when a navigation bar is shown on top of gesture navigation.
-     */
-    public int getExtraBottomInset() {
-        return Math.max(0, mInsets.bottom - mLayoutInsetBottom);
     }
 
     public Point getCellSize() {

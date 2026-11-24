@@ -59,6 +59,7 @@ import java.io.PrintWriter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import app.lawnchair.hotseat.NavBarLift;
 import app.lawnchair.hotseat.DisabledHotseat;
 import app.lawnchair.hotseat.HotseatMode;
 import app.lawnchair.hotseat.HotseatPagedView;
@@ -420,13 +421,16 @@ public class Hotseat extends FrameLayout implements Insettable {
             mQsb.setVisibility(View.VISIBLE);
             lp.gravity = Gravity.BOTTOM;
             lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            // LC: lift the dock above a navigation bar shown after it was laid out
-            lp.height = grid.hotseatBarSizePx + grid.getExtraBottomInset();
+            lp.height = grid.hotseatBarSizePx;
         }
 
         Rect padding = grid.getHotseatLayoutPadding(getContext());
         if (!grid.isVerticalBarLayout()) {
-            padding.bottom += grid.getExtraBottomInset();
+            // LC: lift the dock above a navigation bar that would cover its icons, e.g. one
+            // shown on top of gesture navigation (Xiaomi's full screen gesture toggle).
+            int lift = NavBarLift.extraBottom(this, padding.bottom);
+            lp.height += lift;
+            padding.bottom += lift;
         }
         setPadding(padding.left, padding.top, padding.right, padding.bottom);
         setLayoutParams(lp);
