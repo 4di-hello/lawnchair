@@ -428,7 +428,9 @@ public class Hotseat extends FrameLayout implements Insettable {
         if (!grid.isVerticalBarLayout()) {
             // LC: lift the dock above a navigation bar that would cover its icons, e.g. one
             // shown on top of gesture navigation (Xiaomi's full screen gesture toggle).
-            int lift = NavBarLift.extraBottom(this, padding.bottom);
+            int lift = mActivity instanceof Launcher launcher
+                    ? NavBarLift.forLauncher(launcher)
+                    : NavBarLift.extraBottom(this, padding.bottom);
             lp.height += lift;
             padding.bottom += lift;
         }

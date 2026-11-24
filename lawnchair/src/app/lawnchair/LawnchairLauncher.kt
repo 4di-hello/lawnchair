@@ -566,7 +566,9 @@ class LawnchairLauncher : QuickstepLauncher() {
 
     private fun relayoutDockForNavBar() {
         if (isDestroyed) return
-        hotseat?.setInsets(Rect(deviceProfile.insets))
+        val insets = Rect(deviceProfile.insets)
+        workspace?.setInsets(insets)
+        hotseat?.setInsets(insets)
     }
 
     override fun onDestroy() {

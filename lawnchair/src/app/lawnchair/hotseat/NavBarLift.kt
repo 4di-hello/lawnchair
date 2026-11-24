@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.provider.Settings
 import android.view.View
 import android.view.WindowInsets
+import com.android.launcher3.Launcher
 import com.android.launcher3.Utilities
 
 /**
@@ -20,6 +21,18 @@ object NavBarLift {
 
     private const val BUTTONS_HEIGHT_DP = 48f
     private const val MARGIN_DP = 4f
+
+    /**
+     * Extra bottom space for the dock and the home screen pages above it, so that both move up
+     * together and the pages get smaller rows instead of running under the dock.
+     */
+    @JvmStatic
+    fun forLauncher(launcher: Launcher): Int {
+        val grid = launcher.deviceProfile
+        if (grid.isVerticalBarLayout) return 0
+        val hotseat = launcher.hotseat ?: return 0
+        return extraBottom(hotseat, grid.getHotseatLayoutPadding(launcher).bottom)
+    }
 
     /** Extra bottom space for the dock whose icons end [iconsBottomPadding] above its bottom. */
     @JvmStatic

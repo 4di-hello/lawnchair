@@ -146,6 +146,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import app.lawnchair.hotseat.NavBarLift;
 import app.lawnchair.hotseat.HotseatPagedView;
 import app.lawnchair.gestures.IconSwipeGestureTarget;
 import app.lawnchair.ui.popup.FolderGesturesPopup;
@@ -390,7 +391,9 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         mWorkspaceFadeInAdjacentScreens = grid.shouldFadeAdjacentWorkspaceScreens();
 
         Rect padding = grid.workspacePadding;
-        setPadding(padding.left, padding.top, padding.right, padding.bottom);
+        // LC: make room for the dock when it moves up above a navigation bar
+        int navBarLift = NavBarLift.forLauncher(mLauncher);
+        setPadding(padding.left, padding.top, padding.right, padding.bottom + navBarLift);
         mInsets.set(insets);
 
         if (mWorkspaceFadeInAdjacentScreens) {
@@ -424,7 +427,8 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         } else {
             lp.leftMargin = lp.rightMargin = 0;
             lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-            lp.bottomMargin = grid.hotseatBarSizePx - grid.workspaceCellPaddingXPx;
+            lp.bottomMargin = grid.hotseatBarSizePx - grid.workspaceCellPaddingXPx
+                    + NavBarLift.forLauncher(mLauncher);
         }
         mPageIndicator.setLayoutParams(lp);
     }
