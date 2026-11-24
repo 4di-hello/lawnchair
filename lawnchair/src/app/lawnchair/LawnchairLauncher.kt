@@ -65,6 +65,7 @@ import com.android.launcher3.LauncherSettings.Favorites.CONTAINER_WIDGETS_PREDIC
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.folder.FolderGridOrganizer
 import com.android.launcher3.folder.FolderIcon
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.model.data.PredictedContainerInfo
@@ -177,6 +178,8 @@ class LawnchairLauncher : QuickstepLauncher() {
         preferenceManager2.preferencesDataStore.data.onEach {
             preferenceManager2.withFreshCache {
                 AnimationSpeed.apply(this)
+                FolderGridOrganizer.sPreviewFirstItems =
+                    preferenceManager2.folderPreviewFirstItems.firstCached(preferenceManager2)
                 if (!isDestroyed) {
                     workspace.mapOverItems { info, view ->
                         refreshHomeItem(info, view)
@@ -523,6 +526,8 @@ class LawnchairLauncher : QuickstepLauncher() {
         if (view is BubbleTextView && info is WorkspaceItemInfo && ShortcutOverrides.isCustomizable(info)) {
             view.applyFromWorkspaceItem(info)
         }
+        // The folder preview style may have changed.
+        if (view is FolderIcon) view.onItemsChanged(false)
         view.invalidate()
     }
 

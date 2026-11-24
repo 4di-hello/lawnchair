@@ -680,6 +680,8 @@
     <string name="pick_shortcut_expand">Show shortcuts</string>
     <string name="pick_shortcut_collapse">Hide shortcuts</string>
     <string name="folder_rename">Rename</string>
+    <string name="folder_preview_first_items">Preview shows the first apps</string>
+    <string name="folder_preview_first_items_description">Shows the first four apps of a folder, like Nova. Off: the upper left corner of the open folder, like Android</string>
     <string name="gesture_indicator_color">Color of the swipe gesture marks</string>
     <string name="gesture_indicator_color_auto">Automatic</string>
     <string name="gesture_indicator_color_white">White</string>

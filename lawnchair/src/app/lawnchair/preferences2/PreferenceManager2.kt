@@ -427,6 +427,13 @@ class PreferenceManager2 @Inject constructor(
         defaultValue = true,
     )
 
+    // Fork: folder previews show the first four apps (like Nova) instead of the folder's upper
+    // left 2x2 corner (Android's default).
+    val folderPreviewFirstItems = preference(
+        key = booleanPreferencesKey(name = "folder_preview_first_items"),
+        defaultValue = true,
+    )
+
     // LC: color of the swipe gesture marks; Default follows each icon's label color.
     val gestureIndicatorColor = preference(
         key = stringPreferencesKey(name = "gesture_indicator_color"),

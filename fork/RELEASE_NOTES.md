@@ -1,6 +1,7 @@
 **TL;DR:** Christians Lawnchair-Fork, Stand 23.11.2026. Gesten auf App-Symbolen funktionieren jetzt in alle vier Richtungen, auch auf Ordnern und pro Element. Sie können auch Verknüpfungen öffnen, etwa einen bestimmten Chat. Ins Internet geht der Launcher nur noch für Updates.
 
 ## Neu in diesem Stand
+- **Ordner-Vorschau** zeigt die ersten vier Apps wie Nova (abschaltbar unter Ordner).
 - **Dock-Gesten nach links und rechts** funktionieren jetzt auch bei einem Dock mit nur einer Seite, statt den Startbildschirm zu blättern.
 - **Dock und Navigationsleiste:** Wird die Navigationsleiste nachträglich eingeblendet (z. B. per Tasker), rückt das Dock jetzt darüber.
 - **Farbe der Wisch-Hinweise** wählbar: Automatisch, Weiß, Schwarz, Akzentfarbe oder eigene Farbe (Startbildschirm → Symbole).

@@ -550,6 +550,8 @@
     <string name="pick_shortcut_expand">Verknüpfungen anzeigen</string>
     <string name="pick_shortcut_collapse">Verknüpfungen ausblenden</string>
     <string name="folder_rename">Umbenennen</string>
+    <string name="folder_preview_first_items">Vorschau zeigt die ersten Apps</string>
+    <string name="folder_preview_first_items_description">Zeigt die ersten vier Apps eines Ordners, wie bei Nova. Aus: die obere linke Ecke des geöffneten Ordners, wie bei Android</string>
     <string name="gesture_indicator_color">Farbe der Wisch-Hinweise</string>
     <string name="gesture_indicator_color_auto">Automatisch</string>
     <string name="gesture_indicator_color_white">Weiß</string>

@@ -199,6 +199,7 @@ internal val settingsSearchEntries = listOf(
     SettingsSearchEntry("show_hidden_apps_in_search_results", null, "Search", "search_bar_label", false),
     SettingsSearchEntry("general_label", null, "Folders", "folders_label", true),
     SettingsSearchEntry("folder_shape_label", null, "Folders", "folders_label", false),
+    SettingsSearchEntry("folder_preview_first_items", "folder_preview_first_items_description", "Folders", "folders_label", false),
     SettingsSearchEntry("folder_preview_bg_opacity_label", null, "Folders", "folders_label", false),
     SettingsSearchEntry("folder_bg_opacity_label", null, "Folders", "folders_label", false),
     SettingsSearchEntry("grid", null, "Folders", "folders_label", true),
