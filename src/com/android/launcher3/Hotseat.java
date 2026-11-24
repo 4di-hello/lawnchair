@@ -420,10 +420,14 @@ public class Hotseat extends FrameLayout implements Insettable {
             mQsb.setVisibility(View.VISIBLE);
             lp.gravity = Gravity.BOTTOM;
             lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            lp.height = grid.hotseatBarSizePx;
+            // LC: lift the dock above a navigation bar shown after it was laid out
+            lp.height = grid.hotseatBarSizePx + grid.getExtraBottomInset();
         }
 
         Rect padding = grid.getHotseatLayoutPadding(getContext());
+        if (!grid.isVerticalBarLayout()) {
+            padding.bottom += grid.getExtraBottomInset();
+        }
         setPadding(padding.left, padding.top, padding.right, padding.bottom);
         setLayoutParams(lp);
         InsettableFrameLayout.dispatchInsets(this, insets);
