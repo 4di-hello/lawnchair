@@ -52,7 +52,7 @@ object ShortcutCreators {
     }
 
     /** Turns what a shortcut setup returned into a gesture, or null if it returned nothing usable. */
-    fun configFromResult(context: Context, creator: ShortcutCreator, data: Intent?): GestureHandlerConfig? {
+    fun configFromResult(context: Context, creatorLabel: String, data: Intent?): GestureHandlerConfig? {
         if (data == null) return null
         val request = PinRequestHelper.getPinItemRequest(data)
         if (request != null) {
@@ -62,7 +62,7 @@ object ShortcutCreators {
             if (!request.isValid || !request.accept()) return null
             val label = (shortcut.longLabel ?: shortcut.shortLabel)?.toString()
             return GestureHandlerConfig.OpenApp(
-                appName = if (label.isNullOrEmpty()) creator.label else label,
+                appName = if (label.isNullOrEmpty()) creatorLabel else label,
                 target = OpenAppTarget.Shortcut(
                     intent = Intent(Intent.ACTION_MAIN).setPackage(shortcut.`package`),
                     user = shortcut.userHandle,
@@ -77,7 +77,7 @@ object ShortcutCreators {
         @Suppress("DEPRECATION")
         val name = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
         return GestureHandlerConfig.OpenApp(
-            appName = if (name.isNullOrEmpty()) creator.label else name,
+            appName = if (name.isNullOrEmpty()) creatorLabel else name,
             target = OpenAppTarget.LegacyShortcut(intent),
         )
     }

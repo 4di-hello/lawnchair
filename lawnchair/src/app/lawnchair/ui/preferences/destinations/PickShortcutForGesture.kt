@@ -1,10 +1,14 @@
 package app.lawnchair.ui.preferences.destinations
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
 import android.content.pm.LauncherApps
+import android.os.Bundle
+import android.os.Process
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
@@ -28,6 +32,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityOptionsCompat
 import app.lawnchair.gestures.AppShortcutEntry
 import app.lawnchair.gestures.AppShortcuts
 import app.lawnchair.gestures.ShortcutCreator
@@ -40,6 +45,7 @@ import app.lawnchair.ui.preferences.components.layout.PreferenceTemplate
 import app.lawnchair.ui.preferences.components.layout.preferenceGroupItems
 import app.lawnchair.util.kotlinxJson
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.android.launcher3.util.MSDLPlayerWrapper
 import com.google.android.msdl.data.model.MSDLToken
 import kotlinx.coroutines.Dispatchers
@@ -69,32 +75,40 @@ fun PickShortcutForGesture(
     val creators by produceState(initialValue = emptyList<ShortcutCreator>()) {
         value = withContext(Dispatchers.IO) { ShortcutCreators.load(context) }
     }
-    var pendingCreator by remember { mutableStateOf<ShortcutCreator?>(null) }
-    val createShortcut = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-        val creator = pendingCreator ?: return@rememberLauncherForActivityResult
+    // Name of the app whose shortcut setup is open; saved in case Android recreates this screen.
+    var pendingCreator by rememberSaveable { mutableStateOf<String?>(null) }
+    fun onCreated(result: ActivityResult) {
+        val creatorLabel = pendingCreator ?: return
         pendingCreator = null
-        if (result.resultCode != Activity.RESULT_OK) return@rememberLauncherForActivityResult
-        val config = ShortcutCreators.configFromResult(context, creator, result.data)
+        if (result.resultCode != Activity.RESULT_OK) return
+        val config = ShortcutCreators.configFromResult(context, creatorLabel, result.data)
         if (config == null) {
             Toast.makeText(context, R.string.pick_shortcut_create_failed, Toast.LENGTH_SHORT).show()
-            return@rememberLauncherForActivityResult
+            return
         }
         activity.setResult(Activity.RESULT_OK, Intent().putExtra("config", kotlinxJson.encodeToString(config)))
         activity.finish()
     }
 
+    // Like the launcher's own widget and shortcut picker: apps of this profile are started
+    // directly; for other profiles Android hands out an IntentSender, which must be allowed to
+    // start the app's activity (blocked silently on Android 14 and later otherwise).
+    val createInProfile = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult(), ::onCreated)
+    val createInOtherProfile = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult(), ::onCreated)
+
     fun onCreate(creator: ShortcutCreator) {
-        val sender = try {
-            context.getSystemService(LauncherApps::class.java)?.getShortcutConfigActivityIntent(creator.info)
+        pendingCreator = creator.label
+        try {
+            if (creator.info.user == Process.myUserHandle()) {
+                createInProfile.launch(Intent(Intent.ACTION_CREATE_SHORTCUT).setComponent(creator.info.componentName))
+            } else {
+                val sender = context.getSystemService(LauncherApps::class.java)!!.getShortcutConfigActivityIntent(creator.info)!!
+                createInOtherProfile.launch(IntentSenderRequest.Builder(sender).build(), AllowBackgroundStart)
+            }
         } catch (e: Exception) {
-            null
-        }
-        if (sender == null) {
+            pendingCreator = null
             Toast.makeText(context, R.string.pick_shortcut_create_failed, Toast.LENGTH_SHORT).show()
-            return
         }
-        pendingCreator = creator
-        createShortcut.launch(IntentSenderRequest.Builder(sender).build())
     }
 
     fun onSelect(entry: AppShortcutEntry) {
@@ -293,4 +307,9 @@ private sealed interface ShortcutRow {
     data class Child(val entry: AppShortcutEntry) : ShortcutRow {
         override val key = "shortcut:${groupKey(entry)}/${entry.target.id}"
     }
+}
+
+/** Fork: lets an IntentSender from Android start the app's shortcut setup (Android 14+). */
+private object AllowBackgroundStart : ActivityOptionsCompat() {
+    override fun toBundle(): Bundle? = Utilities.allowBGLaunch(ActivityOptions.makeBasic()).toBundle()
 }
