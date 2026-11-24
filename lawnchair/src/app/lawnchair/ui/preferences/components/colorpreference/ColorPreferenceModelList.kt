@@ -68,6 +68,13 @@ class ColorPreferenceModelList @Inject constructor(
         )
         registerModel(
             ColorPreferenceModel(
+                prefObject = prefs.gestureIndicatorColor,
+                labelRes = R.string.gesture_indicator_color,
+                dynamicEntries = gestureIndicatorColors,
+            ),
+        )
+        registerModel(
+            ColorPreferenceModel(
                 prefObject = prefs.folderColor,
                 labelRes = R.string.folder_preview_bg_color_label,
                 dynamicEntries = dynamicColorsWithDefault,

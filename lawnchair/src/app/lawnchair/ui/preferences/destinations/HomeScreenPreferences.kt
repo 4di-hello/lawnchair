@@ -40,6 +40,7 @@ import app.lawnchair.ui.preferences.components.GestureHandlerPreference
 import app.lawnchair.ui.preferences.components.HomeLayoutSettings
 import app.lawnchair.ui.preferences.components.NavigationActionPreference
 import app.lawnchair.ui.preferences.components.OverlayHandlerPreference
+import app.lawnchair.ui.preferences.components.colorpreference.ColorPreference
 import app.lawnchair.ui.preferences.components.controls.ClickablePreference
 import app.lawnchair.ui.preferences.components.controls.ListPreference
 import app.lawnchair.ui.preferences.components.controls.SliderPreference
@@ -241,11 +242,15 @@ fun HomeScreenPreferences(
                 valueRange = 0.5F..1.5F,
                 showAsPercentage = true,
             )
+            val showGestureIndicator = prefs2.showGestureIndicator.getAdapter()
             SwitchPreference(
-                adapter = prefs2.showGestureIndicator.getAdapter(),
+                adapter = showGestureIndicator,
                 label = stringResource(id = R.string.show_gesture_indicator),
                 description = stringResource(id = R.string.show_gesture_indicator_description),
             )
+            ExpandAndShrink(visible = showGestureIndicator.state.value) {
+                ColorPreference(preference = prefs2.gestureIndicatorColor)
+            }
             SwitchPreference(
                 adapter = homeScreenLabelsAdapter,
                 label = stringResource(id = R.string.show_labels),

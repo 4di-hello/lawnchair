@@ -9,6 +9,7 @@ import android.view.View
 import app.lawnchair.gestures.type.GestureType
 import app.lawnchair.preferences2.PreferenceManager2
 import app.lawnchair.preferences2.firstCached
+import app.lawnchair.theme.color.ColorOption
 
 /**
  * LC: small marks next to an icon or folder, one on each side that has a swipe gesture, so you
@@ -34,8 +35,9 @@ object GestureIndicator {
     }
 
     /**
-     * Draws the marks for [gestures] around [iconBounds]. [color] is the label color, so the
-     * marks stay readable on light and dark wallpapers like the labels.
+     * Draws the marks for [gestures] around [iconBounds], in the color picked in the settings.
+     * Automatic uses [color], the label color, so the marks stay readable on light and dark
+     * wallpapers like the labels.
      */
     @JvmStatic
     fun draw(view: View, canvas: Canvas, iconBounds: Rect, gestures: Set<GestureType>, color: Int) {
@@ -45,7 +47,9 @@ object GestureIndicator {
         val gap = 2f * density
         val radius = thickness / 2
         val length = iconBounds.width() * LENGTH_FACTOR
-        paint.color = color
+        val prefs = PreferenceManager2.getInstance(view.context)
+        val option = prefs.gestureIndicatorColor.firstCached(prefs)
+        paint.color = if (option == ColorOption.Default) color else option.colorPreferenceEntry.lightColor(view.context)
         paint.alpha = ALPHA
         val cx = iconBounds.exactCenterX()
         val cy = iconBounds.exactCenterY()

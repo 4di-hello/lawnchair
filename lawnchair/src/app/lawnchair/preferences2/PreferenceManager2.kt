@@ -427,6 +427,14 @@ class PreferenceManager2 @Inject constructor(
         defaultValue = true,
     )
 
+    // LC: color of the swipe gesture marks; Default follows each icon's label color.
+    val gestureIndicatorColor = preference(
+        key = stringPreferencesKey(name = "gesture_indicator_color"),
+        parse = ColorOption::fromString,
+        save = ColorOption::toString,
+        defaultValue = ColorOption.Default,
+    )
+
     val lockHomeScreen = preference(
         key = booleanPreferencesKey(name = "lock_home_screen"),
         defaultValue = context.resources.getBoolean(R.bool.config_default_lock_home_screen),
