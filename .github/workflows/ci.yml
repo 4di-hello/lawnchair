@@ -33,7 +33,9 @@ jobs:
   build-debug-apk:
     strategy:
       matrix:
-        build-variant: [ assembleLawnWithQuickstepNightlyRelease, assembleLawnWithQuickstepGithubDebug, assembleLawnWithQuickstepPlayDebug ]
+        # Fork: only the nightly release is installed from the fork. Building all three
+        # variants tripled the compute, and GitHub disables workflows of busy forks.
+        build-variant: ${{ fromJSON(github.repository == 'LawnchairLauncher/lawnchair' && '["assembleLawnWithQuickstepNightlyRelease","assembleLawnWithQuickstepGithubDebug","assembleLawnWithQuickstepPlayDebug"]' || '["assembleLawnWithQuickstepNightlyRelease"]') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
